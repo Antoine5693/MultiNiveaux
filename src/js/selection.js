@@ -10,27 +10,10 @@ export default class selection extends Phaser.Scene {
 
 preload() {
   // tous les assets du jeu sont placés dans le sous-répertoire src/assets/
-  this.load.image("img_ciel", "src/assets/sky.png");
-  this.load.image("img_plateforme", "src/assets/platform.png");
-  this.load.spritesheet("img_perso", "src/assets/dude.png", {
-    frameWidth: 32,
-    frameHeight: 48
-  });
+  
 }
 
 create() {
- 
-  this.add.image(400, 300, "img_ciel");
-
-  groupe_plateformes = this.physics.add.staticGroup();
- 
-  groupe_plateformes.create(200, 584, "img_plateforme");
-  groupe_plateformes.create(600, 584, "img_plateforme");
-
-  //  on ajoute 3 platesformes flottantes
-  groupe_plateformes.create(600, 450, "img_plateforme");
-  groupe_plateformes.create(50, 300, "img_plateforme");
-  groupe_plateformes.create(750, 270, "img_plateforme");
 
   /****************************
    *  CREATION DU PERSONNAGE  *
