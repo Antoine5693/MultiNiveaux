@@ -106,8 +106,14 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(player, groupe_plateformes);
     this.physics.add.collider(bullets, groupe_plateformes, function (bullet, platform) {
       bullet.destroy();
-});
-    
+    });
+    this.physics.add.collider(this.chest, player, function (chest, player) {
+      if (enter.isDown && !chest_opened) {
+        chest.anims.play("anim_chest", true);
+        chest_opened = true;
+      }
+    });
+
   }
 
   update() {
