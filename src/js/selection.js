@@ -77,9 +77,9 @@ bullets = this.physics.add.group({
     this.physics.add.collider(player, groupe_plateformes);
     this.physics.add.collider(bullets, groupe_plateformes, function(bullet, platform) {
       bullet.destroy();
-});
+    });
     
-  }
+}
 
   update() {
     player.setVelocityX(0);
