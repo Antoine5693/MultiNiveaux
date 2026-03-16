@@ -6,6 +6,7 @@ var clavier; // pour la gestion du clavier
 var bullets; // groupe de projectiles tirés par le joueur
 var lastFired = 0;
 var wasSpaceDown = false;
+var lastDir = { x: 1, y: 0 }; // direction dans laquelle le joueur regarde
 export default class selection extends Phaser.Scene {
   constructor() {
     super({ key: "selection" });
@@ -29,6 +30,11 @@ export default class selection extends Phaser.Scene {
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
+
+    bullets = this.physics.add.group({
+      allowGravity: false
+    });
+
     groupe_plateformes = this.physics.add.staticGroup();
 
     groupe_plateformes.create(200, 584, "img_plateforme");
@@ -75,9 +81,10 @@ export default class selection extends Phaser.Scene {
 
     //  Collide the player and the groupe_etoiles with the groupe_plateformes
     this.physics.add.collider(player, groupe_plateformes);
-    bullets = this.physics.add.group({
-  allowGravity: false
+    this.physics.add.collider(bullets, groupe_plateformes, function(bullet, platform) {
+      bullet.destroy();
 });
+    
   }
 
   update() {
@@ -105,22 +112,24 @@ export default class selection extends Phaser.Scene {
       player.anims.play("anim_face", true);
     }
 
+    // Update lastDir based on pressed keys
+    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
+      lastDir.x = 0;
+      lastDir.y = 0;
+      if (clavier.left.isDown) lastDir.x = -1;
+      if (clavier.right.isDown) lastDir.x = 1;
+      if (clavier.up.isDown) lastDir.y = -1;
+      if (clavier.down.isDown) lastDir.y = 1;
+    }
+
 if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
 
   let bullet = bullets.create(player.x, player.y, "img_rondblanc");
   bullet.setScale(0.05);
 
-  if (clavier.up.isDown) {
-    bullet.setVelocityY(-400);
-  } else if (clavier.left.isDown) {
-    bullet.setVelocityX(-400);
-  } else if (clavier.right.isDown) {
-        bullet.setVelocityX(400);
-  } else if (clavier.down.isDown) {
-    bullet.setVelocityY(400);
-      } else {
-    bullet.setVelocityX(400);
-  }
+  // Tirer dans la direction où regarde le joueur
+  bullet.setVelocityX(400 * lastDir.x);
+  bullet.setVelocityY(400 * lastDir.y);
 
   lastFired = this.time.now + 300;
 }
