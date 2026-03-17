@@ -1,7 +1,4 @@
-
-
 var player; // désigne le sprite du joueur
-var groupe_plateformes; // contient toutes les plateformes
 var clavier; // pour la gestion du clavier
 var bullets; // groupe de projectiles tirés par le joueur
 var lastFired = 0;
@@ -27,14 +24,14 @@ export default class selection extends Phaser.Scene {
       frameWidth: 72,
       frameHeight: 62
     });
+    // assets pour le tilemap
+    this.load.image("tuiles_de_jeu1", "src/assets/tileset1.png");
+    this.load.image("tuiles_de_jeu3", "src/assets/tileset2.png");
+    this.load.tilemapTiledJSON("carte", "src/assets/SafeZone.tmj");
   }
 
 
   create() {
-    this.add.image(400, 300, "img_ciel");
-
-    // Coffre fermé par défaut à partir de la frame 0 du spritesheet
-    this.chest = this.add.sprite(400, 300, "img_chest_anim", 0);
 
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
@@ -46,15 +43,24 @@ export default class selection extends Phaser.Scene {
     this.chest = this.physics.add.sprite(400, 300, "img_chest_anim", 0);
     this.chest.setImmovable(true); // Le coffre ne bougera pas lorsqu'il sera touché par le joueur
 
-    groupe_plateformes = this.physics.add.staticGroup();
+    // Désactive le corps physics + visibilité si tu veux qu'il disparaisse aussi
+    this.chest.body.enable = false;
 
-    groupe_plateformes.create(200, 584, "img_plateforme");
-    groupe_plateformes.create(600, 584, "img_plateforme");
+    // Création du tilemap et des plateformes à partir de Tiled
+    const map = this.add.tilemap( "carte" );
+    const tileset1 = map.addTilesetImage("1", "tuiles_de_jeu1");
+    const tileset3 = map.addTilesetImage("3", "tuiles_de_jeu3");
+    const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);
+    const calque3 = map.createLayer("Calque de Tuiles 3", [tileset3]);
+    const calque2 = map.createLayer("Calque de Tuiles 2", [tileset3]);
+    const calque4 = map.createLayer("Calque de Tuiles 4", [tileset3]);
+    calque1.setCollisionByProperty({ estSolide: true });
+    calque2.setCollisionByProperty({ estSolide: true });
+    calque3.setCollisionByProperty({ estSolide: true });
+    calque4.setCollisionByProperty({ estSolide: true });
+    
 
-    //  on ajoute 3 platesformes flottantes
-    groupe_plateformes.create(600, 450, "img_plateforme");
-    groupe_plateformes.create(50, 300, "img_plateforme");
-    groupe_plateformes.create(750, 270, "img_plateforme");
+
 
     // Gestion du clavier
     clavier = this.input.keyboard.createCursorKeys();
@@ -68,6 +74,11 @@ export default class selection extends Phaser.Scene {
     player = this.physics.add.sprite(100, 450, "img_perso");
     player.setBounce(0.2); // on donne un petit coefficient de rebond
     player.setCollideWorldBounds(true); // le player se cognera contre les bords du monde
+
+    // Caméra centrée sur le joueur
+    this.cameras.main.startFollow(player);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     this.anims.create({
       key: "anim_tourne_gauche", // key est le nom de l'animation : doit etre unique poru la scene.
@@ -94,19 +105,32 @@ export default class selection extends Phaser.Scene {
     // animation du coffre
     this.anims.create({
       key: "anim_chest",
-      frames: this.anims.generateFrameNumbers("img_chest_anim", { start: 0, end: 11 }),
+      frames: this.anims.generateFrameNumbers("img_chest_anim", { start: 0, end: 10 }),
       frameRate: 10,
       repeat: 0
     });
 
 
+    // Collisions avec les calques solides de Tiled
+    this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
+    this.physics.add.collider(player, calque3);
+    this.physics.add.collider(player, calque4);
 
-
-    //  Collide the player and the groupe_etoiles with the groupe_plateformes
-    this.physics.add.collider(player, groupe_plateformes);
-    this.physics.add.collider(bullets, groupe_plateformes, function (bullet, platform) {
+    this.physics.add.collider(bullets, calque1, function (bullet, platform) {
       bullet.destroy();
     });
+    this.physics.add.collider(bullets, calque2, function (bullet, platform) {
+      bullet.destroy();
+    });
+    this.physics.add.collider(bullets, calque3, function (bullet, platform) {
+      bullet.destroy();
+    });
+    this.physics.add.collider(bullets, calque4, function (bullet, platform) {
+      bullet.destroy();
+    });
+
+    // Collision entre le joueur et le coffre
     this.physics.add.collider(this.chest, player, function (chest, player) {
       if (enter.isDown && !chest_opened) {
         chest.anims.play("anim_chest", true);
