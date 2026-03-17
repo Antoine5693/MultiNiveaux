@@ -6,6 +6,11 @@ var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 }; // direction dans laquelle le joueur regarde
 var chest_opened = false; // pour éviter de rejouer l'animation du coffre une fois ouvert
 var zone; // zone de détection pour le PNJ
+var interact; // touche pour interagir avec les éléments du jeu
+var P;
+var V;
+var O;
+var U;
 
 export default class selection extends Phaser.Scene {
   constructor() {
@@ -73,7 +78,10 @@ export default class selection extends Phaser.Scene {
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
+    P = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    V = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
+    O = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);
+    U = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -236,6 +244,18 @@ export default class selection extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(clavier.shift)==true) {
       this.scene.start("Salle01");
   }
+  if (Phaser.Input.Keyboard.JustDown(P)==true) {
+    this.scene.start("Couloir1");
 }
+if (Phaser.Input.Keyboard.JustDown(V)==true) {
+    this.scene.start("Couloir2");
 }
+if (Phaser.Input.Keyboard.JustDown(O)==true) {
+    this.scene.start("Couloir3");
+}
+if (Phaser.Input.Keyboard.JustDown(U)==true) {
+    this.scene.start("BossZone");
+}
+}}
+
 var enter;
