@@ -37,7 +37,7 @@ export default class selection extends Phaser.Scene {
     this.load.image('npc1', 'src/assets/PNJFILLE1.png');
 
     //asset porte
-    this.load.spritesheet("img_porte1", "src/assets/Spritesheet_porte1coul_complet.png", {
+    this.load.spritesheet("img_porte1", "src/assets/Sritesheet_porte1coul_complet.png", {
     frameWidth: 96,
     frameHeight: 120
   }); 
