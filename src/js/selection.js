@@ -11,6 +11,10 @@ var zone3; // zone de détection pour le PNJ
 var zone4; // zone de détection pour le PNJ
 var hasgun = false; // pour savoir si le joueur a récupéré le pistolet dans le PNJ
 
+var zone; // zone de détection pour le PNJ
+var porte; // pour la porte de transition vers le niveau 2
+var interact;
+var open_porte1 = false;//gère l'état de la porte 1
 
 export default class selection extends Phaser.Scene {
   constructor() {
@@ -40,9 +44,59 @@ export default class selection extends Phaser.Scene {
     this.load.image('npc1', 'src/assets/PNJFILLE1.png');
     this.load.image('npc2', 'src/assets/PNJHOMME1.png');
     this.load.image('npc3', 'src/assets/PNJFILLE2.png');
+
     this.load.spritesheet('npc4', 'src/assets/Militaire.png', {
-      frameWidth: 513/4,
-      frameHeight: 210,
+      frameWidth: 513 / 4,
+      frameHeight: 210
+    });
+    // Charger le sprite sheet du boss zombie
+    this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
+      frameWidth: 154,
+      frameHeight: 159
+    });
+    this.load.spritesheet("boss_jump1", "src/assets/Zombie boss jump1 spritesheet.png", {
+      frameWidth: 126,
+      frameHeight: 225
+    });
+    this.load.spritesheet("boss_jump2", "src/assets/Zombie boss jump2 spritesheet.png", {
+      frameWidth: 135,
+      frameHeight: 201
+    });
+    this.load.spritesheet("boss_jump3", "src/assets/Zombie boss jump3 spritesheet.png", {
+      frameWidth: 134,
+      frameHeight: 140
+    });
+    this.load.spritesheet("boss_mort", "src/assets/Zombie boss deaths spritesheet.png", {
+      frameWidth: 168,
+      frameHeight: 169
+    });
+    this.load.spritesheet("blob_mort", "src/assets/blob mort spritesheet.png", {
+      frameWidth: 68,
+      frameHeight: 58
+    });
+    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+      frameWidth: 73,
+      frameHeight: 52
+    });
+    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+      frameWidth: 79,
+      frameHeight: 58
+    });
+    this.load.spritesheet("zombie_mort", "src/assets/zombiemort spritesheet.png", {
+      frameWidth: 32,
+      frameHeight: 30
+    });
+    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement spritesheet.png", {
+      frameWidth: 30,
+      frameHeight: 30
+    });
+    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque spritesheet.png", {
+      frameWidth: 31,
+      frameHeight: 32
+    });
+    this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
+      frameWidth: 103,
+      frameHeight: 128
     });
   }
 
@@ -56,6 +110,93 @@ export default class selection extends Phaser.Scene {
     bullets = this.physics.add.group({
       allowGravity: false
     });
+    this.anims.create({
+      key: "boss_attack",
+      frames: this.anims.generateFrameNumbers("boss_zombie", { start: 0, end: 4 }),
+      frameRate: 5,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "boss_jump1",
+      frames: this.anims.generateFrameNumbers("boss_jump1", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_jump2",
+      frames: this.anims.generateFrameNumbers("boss_jump2", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_jump3",
+      frames: this.anims.generateFrameNumbers("boss_jump3", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_mort",
+      frames: this.anims.generateFrameNumbers("boss_mort", { start: 0, end: 24 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "blob_mort",
+      frames: this.anims.generateFrameNumbers("blob_mort", { start: 0, end: 8 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "blob_move",
+      frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "blob_attaque",
+      frames: this.anims.generateFrameNumbers("blob_attaque", { start: 0, end: 9 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "zombie_mort",
+      frames: this.anims.generateFrameNumbers("zombie_mort", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "zombie_deplacement",
+      frames: this.anims.generateFrameNumbers("zombie_deplacement", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "zombie_attaque",
+      frames: this.anims.generateFrameNumbers("zombie_attaque", { start: 0, end: 6 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    // Système d'enchaînement des animations jump
+    this.jumpSequence = ['boss_jump1', 'boss_jump2', 'boss_jump3'];
+    this.currentJumpIndex = 0;
+
+    // Fonction pour passer à l'animation suivante
+    this.nextJumpAnimation = () => {
+      this.currentJumpIndex = (this.currentJumpIndex + 1) % this.jumpSequence.length;
+      this.boss.anims.play(this.jumpSequence[this.currentJumpIndex]).setOrigin(1, 1);
+    };
+
     this.chest = this.physics.add.sprite(400, 300, "img_chest_anim", 0);
     this.chest.setImmovable(true); // Le coffre ne bougera pas lorsqu'il sera touché par le joueur
 
@@ -75,8 +216,28 @@ export default class selection extends Phaser.Scene {
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
 
-    // Création du PNJ
-    this.npc1 = this.physics.add.staticSprite(150, 150, 'npc1');
+    // Création du boss zombie sur la map
+    this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
+    this.boss.setScale(1.5); // taille du boss
+    // this.boss.setOrigin(0, 0.5); // Origine 
+    this.boss.setBounce(0.2);
+    this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
+    console.log("Boss zombie avec animation jump1 créé sur la map !");
+
+    // Timer pour enchaîner les animations jump toutes les 0.5 secondes
+    this.time.addEvent({
+      delay: 500, // 0.5 seconde - plus rapide !
+      callback: this.nextJumpAnimation,
+      callbackScope: this,
+      loop: true
+    });
+
+    // Collisions du boss avec la map
+    this.physics.add.collider(this.boss, calque1);
+    this.physics.add.collider(this.boss, calque2);
+    this.physics.add.collider(this.boss, calque3);
+    this.physics.add.collider(this.boss, calque4);
+
 
 
 
@@ -85,6 +246,15 @@ export default class selection extends Phaser.Scene {
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
+    //création de la porte
+    porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
+    //this.porte.setscale(0.5);
+    this.anims.create({
+      key: "anim_ouvreporte1",
+      frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -134,7 +304,7 @@ export default class selection extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("npc4", { start: 0, end: 3 }),
       frameRate: 10,
       repeat: 0
-     });
+    });
 
 
     // Collisions avec les calques solides de Tiled
@@ -169,7 +339,8 @@ export default class selection extends Phaser.Scene {
      ****************************/
 
     // PNJ
-    this.npc1.setScale(0.40);
+    this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso");
+    this.npc1.setScale(0.5);
     this.npc1.refreshBody();
 
     this.npc2 = this.physics.add.staticSprite(130, 340, 'npc2');
@@ -241,7 +412,11 @@ export default class selection extends Phaser.Scene {
           this.textefille1.setVisible(false);
         });
       } else { }
+
+
+
     });
+
 
 
 
@@ -281,7 +456,7 @@ export default class selection extends Phaser.Scene {
         hasgun = true;
         this.time.delayedCall(5000, () => {
           this.textefille2.setVisible(false);
-        }); 
+        });
       }
     });
 
@@ -302,7 +477,8 @@ export default class selection extends Phaser.Scene {
           this.textemilitaire.setVisible(false);
         });
       }
-    });}
+    });
+  }
 
   update() {
     player.setVelocityX(0);
@@ -352,8 +528,64 @@ export default class selection extends Phaser.Scene {
     }
 
     wasSpaceDown = this.keySpace.isDown;
+    // horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
+    }
+
+    // vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+    }
+
+    // idling
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
+
+    // Update lastDir based on pressed keys
+    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
+      lastDir.x = 0;
+      lastDir.y = 0;
+      if (clavier.left.isDown) lastDir.x = -1;
+      if (clavier.right.isDown) lastDir.x = 1;
+      if (clavier.up.isDown) lastDir.y = -1;
+      if (clavier.down.isDown) lastDir.y = 1;
+    }
+
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+
+      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+      bullet.setScale(0.05);
+
+      // Tirer dans la direction où regarde le joueur
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
+
+      lastFired = this.time.now + 300;
+    }
+
+    wasSpaceDown = this.keySpace.isDown;
+
+    if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
+      this.scene.start("Salle01");
+    }
+
+
+    if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
+      this.physics.overlap(player, porte) == true) {
+      // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+      open_porte1 = true;
+      porte.anims.play("anim_ouvreporte1");
+    }
+
   }
 }
 
-
-var interact;  
+var enter;

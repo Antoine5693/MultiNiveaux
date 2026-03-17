@@ -1,5 +1,6 @@
 import selection from "./js/selection.js"; 
 import niveau1 from "./js/niveau1.js"; 
+import Salle01 from "./js/Salle01.js";
 
 var config = {
   type: Phaser.AUTO,
@@ -16,7 +17,7 @@ var config = {
       debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [selection,niveau1]  // liste des scenes du jeu : ici une seule scene : selection
+  scene: [selection,niveau1,Salle01]  // liste des scenes du jeu : ici une seule scene : selection
 };
 
 

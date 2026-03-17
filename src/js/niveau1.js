@@ -1,3 +1,4 @@
+var player; 
 export default class niveau1 extends Phaser.Scene {
   // constructeur de la classe
   constructor() {
@@ -30,27 +31,30 @@ export default class niveau1 extends Phaser.Scene {
 
     // DEPLACEMENT DU PERSONNAGE
 
-    if (this.clavier.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.anims.play("anim_tourne_gauche", true);
+    player.setVelocityX(0);
+    player.setVelocityY(0);
 
-    } else if (this.clavier.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.anims.play("anim_tourne_droite", true);
-      
-    }else if (this.clavier.up.isDown){
-      this.player.setVelocityY(-160);
+    // horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
     }
 
-    else if (this.clavier.down.isDown){
-      this.player.setVelocityY(160);
+    // vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
     }
-     else {
-      this.player.setVelocityX(0);
-      this.player.setVelocityY(0);  
-      this.player.anims.play("anim_face");
-    }}
+
+    // idling
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
    
   
 }
- 
+}
