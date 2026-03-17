@@ -12,6 +12,11 @@ var zone4; // zone de détection pour le PNJ
 var hasgun = false; // pour savoir si le joueur a récupéré le pistolet dans le PNJ
 
 var zone; // zone de détection pour le PNJ
+var interact; // touche pour interagir avec les éléments du jeu
+var P;
+var V;
+var O;
+var U;
 var porte; // pour la porte de transition vers le niveau 2
 var interact;
 var open_porte1 = false;//gère l'état de la porte 1
@@ -245,6 +250,10 @@ export default class selection extends Phaser.Scene {
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    P = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    V = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
+    O = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);
+    U = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
@@ -585,7 +594,19 @@ export default class selection extends Phaser.Scene {
       porte.anims.play("anim_ouvreporte1");
     }
 
+
+    if (Phaser.Input.Keyboard.JustDown(P) == true) {
+      this.scene.start("Couloir1");
+    }
+    if (Phaser.Input.Keyboard.JustDown(V) == true) {
+      this.scene.start("Couloir2");
+    }
+    if (Phaser.Input.Keyboard.JustDown(O) == true) {
+      this.scene.start("Couloir3");
+    }
+    if (Phaser.Input.Keyboard.JustDown(U) == true) {
+      this.scene.start("BossZone");
+    }
   }
 }
-
 var enter;
