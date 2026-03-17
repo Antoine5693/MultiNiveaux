@@ -8,6 +8,7 @@ var chest_opened = false; // pour éviter de rejouer l'animation du coffre une f
 var zone; // zone de détection pour le PNJ
 var porte; // pour la porte de transition vers le niveau 2
 var interact;
+var open_porte1 = false;//gère l'état de la porte 1
 
 export default class selection extends Phaser.Scene {
   constructor() {
@@ -37,9 +38,9 @@ export default class selection extends Phaser.Scene {
     this.load.image('npc1', 'src/assets/PNJFILLE1.png');
 
     //asset porte
-    this.load.spritesheet("img_porte1", "src/assets/Sritesheet_porte1coul_complet.png", {
-    frameWidth: 96,
-    frameHeight: 130
+    this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
+    frameWidth: 103,
+    frameHeight: 128
   }); 
 
   }
@@ -83,6 +84,15 @@ export default class selection extends Phaser.Scene {
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
+           //création de la porte
+    porte = this.physics.add.staticSprite(625,60, "img_porte1", 0); 
+    //this.porte.setscale(0.5);
+    this.anims.create({
+    key: "anim_ouvreporte1",
+    frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+    frameRate: 20,
+    repeat: 0
+  });
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -193,22 +203,7 @@ export default class selection extends Phaser.Scene {
 
 
     });
-       //création de la porte
-    porte = this.physics.add.staticSprite(625,60, "img_porte1", 0); 
-    //this.porte.setscale(0.5);
-    this.anims.create({
-    key: "anim_ouvreporte1",
-    frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
-    frameRate: 8,
-    repeat: 0
-  });
 
-  this.anims.create({
-    key: "anim_fermeporte1",
-    frames: this.anims.generateFrameNumbers("img_porte1", { start: 8, end: 0 }),
-    frameRate: 50,
-    repeat: 0
-  });  
 
 }
 
@@ -266,9 +261,10 @@ export default class selection extends Phaser.Scene {
       this.scene.start("Salle01");
   }
 
-  if ( Phaser.Input.Keyboard.JustDown(interact) == true &&
+  if (open_porte1==false && Phaser.Input.Keyboard.JustDown(interact) == true &&
     this.physics.overlap(player, porte) == true) {
    // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+      open_porte1 = true;
    porte.anims.play("anim_ouvreporte1");
   } 
 
