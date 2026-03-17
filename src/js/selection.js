@@ -312,6 +312,7 @@ export default class selection extends Phaser.Scene {
      ****************************/
 
     // PNJ
+    this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso");
     this.npc1.setScale(0.5);
     this.npc1.refreshBody();
 
