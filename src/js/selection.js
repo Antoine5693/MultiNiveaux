@@ -6,6 +6,8 @@ var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 }; // direction dans laquelle le joueur regarde
 var chest_opened = false; // pour éviter de rejouer l'animation du coffre une fois ouvert
 var zone; // zone de détection pour le PNJ
+var porte; // pour la porte de transition vers le niveau 2
+var interact;
 
 export default class selection extends Phaser.Scene {
   constructor() {
@@ -33,6 +35,13 @@ export default class selection extends Phaser.Scene {
 
     // asset pour le npc
     this.load.image('npc1', 'src/assets/PNJFILLE1.png');
+
+    //asset porte
+    this.load.spritesheet("img_porte1", "src/assets/Spritesheet_porte1coul_complet.png", {
+    frameWidth: 96,
+    frameHeight: 120
+  }); 
+
   }
 
 
@@ -142,7 +151,7 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(this.chest, player, function (chest, player) {
       if (interact.isDown && !chest_opened) {
         chest.anims.play("anim_chest", true);
-        chest_opened = true;
+       chest_opened = true;
       }
     });
 
@@ -180,8 +189,28 @@ export default class selection extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(interact)) {
         this.textefille1.setVisible(true);
       } else { }
+    
+
+
     });
-  }
+       //création de la porte
+    porte = this.physics.add.staticSprite(608,96, "img_porte1", 0); 
+    //this.porte.setscale(0.5);
+    this.anims.create({
+    key: "anim_ouvreporte1",
+    frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+    frameRate: 50,
+    repeat: 0
+  });
+
+  this.anims.create({
+    key: "anim_fermeporte1",
+    frames: this.anims.generateFrameNumbers("img_porte1", { start: 8, end: 0 }),
+    frameRate: 50,
+    repeat: 0
+  });  
+
+}
 
 
     update() {
@@ -236,6 +265,13 @@ export default class selection extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(clavier.shift)==true) {
       this.scene.start("Salle01");
   }
+
+  if ( Phaser.Input.Keyboard.JustDown(interact) == true &&
+    this.physics.overlap(player, porte) == true) {
+   // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+   porte.anims.play("anim_ouvreporte1");
+  } 
+
 }
 }
 var enter;
