@@ -78,6 +78,10 @@ export default class selection extends Phaser.Scene {
       frameWidth: 31,
       frameHeight: 32
     });
+    this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
+      frameWidth: 103,
+      frameHeight: 128
+    });
   }
 
 
@@ -312,7 +316,6 @@ export default class selection extends Phaser.Scene {
      ****************************/
 
     // PNJ
-    this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso");
     this.npc1.setScale(0.5);
     this.npc1.refreshBody();
 
