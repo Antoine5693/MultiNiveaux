@@ -5,6 +5,11 @@ var lastFired = 0;
 var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 }; // direction dans laquelle le joueur regarde
 var chest_opened = false; // pour éviter de rejouer l'animation du coffre une fois ouvert
+var zone; // zone de détection pour le PNJ
+var porte; // pour la porte de transition vers le niveau 2
+var interact;
+var open_porte1 = false;//gère l'état de la porte 1
+
 export default class selection extends Phaser.Scene {
   constructor() {
     super({ key: "selection" });
@@ -179,7 +184,7 @@ export default class selection extends Phaser.Scene {
     this.chest.body.enable = false;
 
     // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap( "carte" );
+    const map = this.add.tilemap("carte");
     const tileset1 = map.addTilesetImage("1", "tuiles_de_jeu1");
     const tileset3 = map.addTilesetImage("3", "tuiles_de_jeu3");
     const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);
@@ -219,7 +224,17 @@ export default class selection extends Phaser.Scene {
     // Gestion du clavier
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+           //création de la porte
+    porte = this.physics.add.staticSprite(625,60, "img_porte1", 0); 
+    //this.porte.setscale(0.5);
+    this.anims.create({
+    key: "anim_ouvreporte1",
+    frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+    frameRate: 20,
+    repeat: 0
+  });
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -286,63 +301,115 @@ export default class selection extends Phaser.Scene {
 
     // Collision entre le joueur et le coffre
     this.physics.add.collider(this.chest, player, function (chest, player) {
-      if (enter.isDown && !chest_opened) {
+      if (interact.isDown && !chest_opened) {
         chest.anims.play("anim_chest", true);
-        chest_opened = true;
+       chest_opened = true;
       }
     });
 
-  }
+    /****************************
+     *      CREATION DES PNJs     *
+     ****************************/
 
-  update() {
-    player.setVelocityX(0);
-    player.setVelocityY(0);
+    // PNJ
+    this.npc1.setScale(0.5);
+    this.npc1.refreshBody();
 
-    // horizontal
-    if (clavier.left.isDown) {
-      player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
-    } else if (clavier.right.isDown) {
-      player.setVelocityX(160);
-      player.anims.play("anim_tourne_droite", true);
-    }
+    // Taille complète actuelle
+    const width = this.npc1.displayWidth;
+    const height = this.npc1.displayHeight;
 
-    // vertical
-    if (clavier.up.isDown) {
-      player.setVelocityY(-160);
-    } else if (clavier.down.isDown) {
-      player.setVelocityY(160);
-    }
+    //  Hitbox = seulement partie haute 
+    this.npc1.setSize(width, height / (3 / 2));
+    this.physics.add.collider(player, this.npc1);
+    zone = this.add.zone(this.npc1.x, this.npc1.y, width * 2, height * 1.5);
+    this.physics.add.existing(zone, true);
 
-    // idling
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
-    }
+    //  Décaler vers le haut
+    this.npc1.setOffset(0, 0);
 
-    // Update lastDir based on pressed keys
-    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
-      lastDir.x = 0;
-      lastDir.y = 0;
-      if (clavier.left.isDown) lastDir.x = -1;
-      if (clavier.right.isDown) lastDir.x = 1;
-      if (clavier.up.isDown) lastDir.y = -1;
-      if (clavier.down.isDown) lastDir.y = 1;
-    }
+    // dialogue
+    this.textefille1 = this.add.text(this.npc1.x, this.npc1.y -100 , "Bonjour !", { 
+      font: "16px Arial",
+       fill: "#ffffff"  ,  
+       backgroundColor: "#000000",
+    padding: { x: 10, y: 5 }}
+    ).setOrigin(0.5);
+    this.textefille1.setVisible(false);
+    this.physics.add.overlap(player, zone, () => {
+      // Afficher le dialogue
+      if (Phaser.Input.Keyboard.JustDown(interact)) {
+        this.textefille1.setVisible(true);
+      } else { }
+    
 
-    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
 
-      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
-      bullet.setScale(0.05);
+    });
 
-      // Tirer dans la direction où regarde le joueur
-      bullet.setVelocityX(400 * lastDir.x);
-      bullet.setVelocityY(400 * lastDir.y);
 
-      lastFired = this.time.now + 300;
-    }
-
-    wasSpaceDown = this.keySpace.isDown;
-  }
 }
 
+
+    update() {
+      player.setVelocityX(0);
+      player.setVelocityY(0);
+
+      // horizontal
+      if (clavier.left.isDown) {
+        player.setVelocityX(-160);
+        player.anims.play("anim_tourne_gauche", true);
+      } else if (clavier.right.isDown) {
+        player.setVelocityX(160);
+        player.anims.play("anim_tourne_droite", true);
+      }
+
+      // vertical
+      if (clavier.up.isDown) {
+        player.setVelocityY(-160);
+      } else if (clavier.down.isDown) {
+        player.setVelocityY(160);
+      }
+
+      // idling
+      if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+        player.anims.play("anim_face", true);
+      }
+
+      // Update lastDir based on pressed keys
+      if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
+        lastDir.x = 0;
+        lastDir.y = 0;
+        if (clavier.left.isDown) lastDir.x = -1;
+        if (clavier.right.isDown) lastDir.x = 1;
+        if (clavier.up.isDown) lastDir.y = -1;
+        if (clavier.down.isDown) lastDir.y = 1;
+      }
+
+      if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+
+        let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+        bullet.setScale(0.05);
+
+        // Tirer dans la direction où regarde le joueur
+        bullet.setVelocityX(400 * lastDir.x);
+        bullet.setVelocityY(400 * lastDir.y);
+
+        lastFired = this.time.now + 300;
+      }
+
+    wasSpaceDown = this.keySpace.isDown;
+
+    if (Phaser.Input.Keyboard.JustDown(clavier.shift)==true) {
+      this.scene.start("Salle01");
+  }
+
+  if (open_porte1==false && Phaser.Input.Keyboard.JustDown(interact) == true &&
+    this.physics.overlap(player, porte) == true) {
+   // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+      open_porte1 = true;
+   porte.anims.play("anim_ouvreporte1");
+  } 
+
+}
+}
 var enter;
