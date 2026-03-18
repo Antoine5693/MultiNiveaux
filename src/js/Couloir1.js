@@ -66,7 +66,7 @@ export default class Couloir1 extends Phaser.Scene {
       frameWidth: 103,
       frameHeight: 128
     });
-this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
+    this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
@@ -78,19 +78,19 @@ this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
-this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
+    this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
 
-    this.load.spritesheet("img_escalier1", "src/assets/escalier.png", {
-      frameWidth: 206,
-      frameHeight: 128
+    this.load.image("img_escalier1", "src/assets/escalier.png", {
+      frameWidth: 50,
+      frameHeight: 200
     });
 
-    this.load.spritesheet("img_escalier2", "src/assets/escalier.png", {
-      frameWidth: 206,
-      frameHeight: 128
+    this.load.image("img_escalier2", "src/assets/escalier.png", {
+      frameWidth: 50,
+      frameHeight: 200
     });
   }
 
@@ -145,43 +145,43 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
       repeat: 0
     });
 
-      //création de la porte c1_4
-      porte4 = this.physics.add.staticSprite(2861, 1180, "img_porteC1_4", 0);
-      open_portec1_4 = false;
-      this.anims.create({
-        key: "anim_ouvreporte4",
-        frames: this.anims.generateFrameNumbers("img_porteC1_4", { start: 0, end: 7 }),
-        frameRate: 20,
-        repeat: 0
-      });
+    //création de la porte c1_4
+    porte4 = this.physics.add.staticSprite(2861, 1180, "img_porteC1_4", 0);
+    open_portec1_4 = false;
+    this.anims.create({
+      key: "anim_ouvreporte4",
+      frames: this.anims.generateFrameNumbers("img_porteC1_4", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
-      //création de la porte c1_5
-      porte5 = this.physics.add.staticSprite(1805, 1628, "img_porteC1_5", 0);
-      open_portec1_5 = false;
-      this.anims.create({
-        key: "anim_ouvreporte5",
-        frames: this.anims.generateFrameNumbers("img_porteC1_5", { start: 0, end: 7 }),
-        frameRate: 20,
-        repeat: 0
-      });
+    //création de la porte c1_5
+    porte5 = this.physics.add.staticSprite(1805, 1628, "img_porteC1_5", 0);
+    open_portec1_5 = false;
+    this.anims.create({
+      key: "anim_ouvreporte5",
+      frames: this.anims.generateFrameNumbers("img_porteC1_5", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
-        //création de la porte c1_6
-        porte6 = this.physics.add.staticSprite(3149, 1852, "img_porteC1_6", 0);
-        open_portec1_6 = false;
-        this.anims.create({
-          key: "anim_ouvreporte6",
-          frames: this.anims.generateFrameNumbers("img_porteC1_6", { start: 0, end: 7 }),
-          frameRate: 20,
-          repeat: 0
-        });
+    //création de la porte c1_6
+    porte6 = this.physics.add.staticSprite(3149, 1852, "img_porteC1_6", 0);
+    open_portec1_6 = false;
+    this.anims.create({
+      key: "anim_ouvreporte6",
+      frames: this.anims.generateFrameNumbers("img_porteC1_6", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
-        //création de l'escalier1
-        escalier1 = this.physics.add.staticSprite(2272, 128, "img_escalier1", 0);
-        open_escalier1 = false;
+    //création de l'escalier1
+    escalier1 = this.physics.add.staticSprite(3392, 2425, "img_escalier1", 0);
+    open_escalier1 = false;
 
-          //création de l'escalier2 
-          escalier2 = this.physics.add.staticSprite(2272, 128, "img_escalier2", 0);
-          open_escalier2 = false;
+    //création de l'escalier2 
+    escalier2 = this.physics.add.staticSprite(1280, 2204, "img_escalier2", 0);
+    open_escalier2 = false;
 
 
 
