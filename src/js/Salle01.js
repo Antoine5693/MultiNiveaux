@@ -143,7 +143,7 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
       open_porte1 = true;
       this.time.delayedCall(500, () => {
         // Envoie des coordonnées de respawn à la scène Couloir1
-        this.scene.start("Couloir1", { x: 3520, y: 800 });
+        this.scene.start("Couloir2", { x: 2272, y: 1088 });
       });
       porte.anims.play("anim_ouvreporte1");
     }

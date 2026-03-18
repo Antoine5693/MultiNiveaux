@@ -76,7 +76,7 @@ export default class Salle04 extends Phaser.Scene {
       open_porte1 = true;
       this.time.delayedCall(500, () => {
         // Envoie des coordonnées de respawn à la scène Couloir1
-        this.scene.start("Couloir1", { x: 3520, y: 800 });
+        this.scene.start("Couloir1", { x: 2848, y: 1248 });
       });
       porte.anims.play("anim_ouvreporte1");
     }

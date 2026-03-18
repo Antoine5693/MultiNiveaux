@@ -89,7 +89,7 @@ export default class Couloir3 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(1504, 2336, "dude.png");
+    player = this.physics.add.sprite(1536, 2318, "dude.png");
     player.refreshBody();
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -141,7 +141,7 @@ export default class Couloir3 extends Phaser.Scene {
     });*/
 
     //création de l'escalier1
-    escalier1 = this.physics.add.staticSprite(1504, 2464, "img_escalier1", 0);
+    escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
 
 
     // Caméra centrée sur le joueur
