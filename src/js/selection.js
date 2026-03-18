@@ -257,6 +257,7 @@ export default class selection extends Phaser.Scene {
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
+    open_porte1 = false;
     //this.porte.setscale(0.5);
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -591,6 +592,9 @@ export default class selection extends Phaser.Scene {
       this.physics.overlap(player, porte) == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
+      this.time.delayedCall(500, () => {
+        this.scene.start("Couloir1");
+      });
       porte.anims.play("anim_ouvreporte1");
     }
 
