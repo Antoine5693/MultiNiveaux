@@ -15,7 +15,7 @@ export default class Couloir1 extends Phaser.Scene {
     this.load.image("B2", "src/assets/Background2.png");
     this.load.image("D1", "src/assets/Dela_dec1.png");
     this.load.image("D2", "src/assets/Dela_dec2.png");
-    this.load.tilemapTiledJSON("carte3", "src/assets/Couloir1.tmj");
+    this.load.tilemapTiledJSON("carte1", "src/assets/Couloir1.tmj");
     // asset pour le joueur
     this.load.spritesheet("dude.png", "src/assets/dude.png", {
       frameWidth: 32,
@@ -31,7 +31,7 @@ export default class Couloir1 extends Phaser.Scene {
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap( "carte3" );
+    const map = this.add.tilemap( "carte1" );
     const tileset1 = map.addTilesetImage("1", "B");
     const tileset2 = map.addTilesetImage("3", "B2");
     const tileset3 = map.addTilesetImage("333", "D1");
@@ -48,6 +48,7 @@ export default class Couloir1 extends Phaser.Scene {
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
     this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
     this.physics.add.collider(player, calque3);
     this.clavier = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, this.groupe_plateformes);
