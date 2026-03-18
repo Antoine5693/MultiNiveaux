@@ -1,5 +1,5 @@
 var player;
-var clavier;
+var clavier; 
 var enter;
 
 export default class Salle01 extends Phaser.Scene {
@@ -17,14 +17,14 @@ export default class Salle01 extends Phaser.Scene {
   }
 
   create() {
-
+    
     // clavier pour les déplacements du personnage
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap("carte2");
+    const map = this.add.tilemap( "carte2" );
     const tileset1 = map.addTilesetImage("Background", "B");
     const tileset3 = map.addTilesetImage("1", "D");
     const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);
@@ -32,7 +32,7 @@ export default class Salle01 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(330, 150, "dude.png");
+    player = this.physics.add.sprite(100, 450, "dude.png");
     player.refreshBody();
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -41,18 +41,10 @@ export default class Salle01 extends Phaser.Scene {
     this.clavier = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, this.groupe_plateformes);
 
-    this.cameras.main.setViewport(35, 0, 750, 600);
-    
-    let msg = this.add.text(this.cameras.main.width / 2,
-      this.cameras.main.height / 2, 'DIE !', { fontSize: '28px' });
-
-    this.time.delayedCall(2000, () => {
-      msg.destroy(); // disparaît après 2 secondes
-    });
   }
 
   update() {
-
+    
     // DEPLACEMENT DU PERSONNAGE
 
     player.setVelocityX(0);
@@ -78,7 +70,7 @@ export default class Salle01 extends Phaser.Scene {
     if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
       player.anims.play("anim_face", true);
     }
-
-
-  }
+   
+  
+}
 }

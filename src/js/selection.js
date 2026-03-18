@@ -88,16 +88,19 @@ export default class selection extends Phaser.Scene {
     });
     this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
     this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
-
+    this.load.audio("growl", "src/assets/growling_sound.mp3");
     //slime
     this.load.spritesheet("blob_mort", "src/assets/blob mort.png", {
       frameWidth: 68,
       frameHeight: 58
     });
+
     this.load.spritesheet("blob_move", "src/assets/blob move.png", {
-      frameWidth: 73,
-      frameHeight: 52
+      frameWidth: 25,
+      frameHeight: 51,
+      spacing : 24
     });
+
     this.load.spritesheet("blob_attaque", "src/assets/blob attaque.png", {
       frameWidth: 79,
       frameHeight: 58
@@ -147,7 +150,7 @@ export default class selection extends Phaser.Scene {
     this.sonAttaqueSautée = this.sound.add("son_attaquesautee");
     this.sonAttaqueÉpée = this.sound.add("son_épée");
     this.sonAttaqueBlob = this.sound.add("attaque_blob");
-
+    this.sonGrowl = this.sound.add("growl");
 
     this.anims.create({
       key: "boss_attack",
@@ -254,7 +257,11 @@ export default class selection extends Phaser.Scene {
       frameRate: 13,
       repeat: 0
     });
-
+    this.bossPatterns = [
+    "jumpAttack",
+    "swordAttack",
+    "moveAttack"
+    ];
     // Système d'enchaînement des animations jump
     this.jumpSequence = ['boss_jump1', 'boss_jump2', 'boss_jump3'];
     this.currentJumpIndex = 0;
@@ -301,13 +308,25 @@ export default class selection extends Phaser.Scene {
 
     });
 
-    //son attaque épée du boss
-    this.boss.on("animationstart", (anim) => {
-      if (anim.key === "boss_attack") {
-        this.sonAttaqueÉpée.play();
-      }
-    });
-
+  //son attaque épée du boss
+  this.boss.on("animationstart", (anim) => {
+    if (anim.key === "boss_attack") {
+      this.sonAttaqueÉpée.play();
+    }
+  });
+  // son de déplacement du boss
+   this.boss.on("animationstart", (anim) => {
+   if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
+     if (!this.sonGrowl.isPlaying) {
+      this.sonGrowl.play();
+     }
+    }
+  });
+  this.boss.on("animationcomplete", (anim) => {
+  if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
+    this.sonGrowl.stop();
+   }
+  });
     // Timer pour enchaîner les animations jump toutes les 0.5 secondes
     this.time.addEvent({
       delay: 500, // 0.5 seconde - plus rapide !
@@ -762,6 +781,17 @@ export default class selection extends Phaser.Scene {
       hastalkedtomilitaire: this.hastalkedtomilitaire,
       hasgun: hasgun
     });*/
+// changement de direction du blob si mur
+    if (this.slime.body.blocked.right) {
+        this.slime.setVelocityX(-80);
+        this.slime.flipX = true;
+    }
+
+    if (this.slime.body.blocked.left) {
+        this.slime.setVelocityX(80);
+        this.slime.flipX = false;
+    }
+
 
     if (Phaser.Input.Keyboard.JustDown(P) == true) {
       this.scene.start("Couloir1");
