@@ -216,7 +216,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
         // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
         open_portec1_2 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle02");
         });
         porte2.anims.play("anim_ouvreporte2");
       }
@@ -226,7 +226,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
         // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
         open_portec1_3 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle03");
         });
         porte3.anims.play("anim_ouvreporte3");
       }
@@ -236,7 +236,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
         // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
         open_portec1_4 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle04");
         });
         porte4.anims.play("anim_ouvreporte4");
       }
@@ -246,7 +246,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
         // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
         open_portec1_5 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle05");
         });
         porte5.anims.play("anim_ouvreporte5");
       }
@@ -256,7 +256,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
         // le personnage est sur la porte6 et vient d'appuyer sur la touche entrée
         open_portec1_6 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle06");
         });
         porte6.anims.play("anim_ouvreporte6");
       }
