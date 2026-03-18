@@ -98,7 +98,7 @@ export default class selection extends Phaser.Scene {
     this.load.spritesheet("blob_move", "src/assets/blob move.png", {
       frameWidth: 25,
       frameHeight: 51,
-      spacing : 24
+      spacing: 24
     });
 
     this.load.spritesheet("blob_attaque", "src/assets/blob attaque.png", {
@@ -139,9 +139,7 @@ export default class selection extends Phaser.Scene {
 
   create() {
 
-    this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
-    this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
-    this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
+
 
     bullets = this.physics.add.group({
       allowGravity: false
@@ -258,9 +256,9 @@ export default class selection extends Phaser.Scene {
       repeat: 0
     });
     this.bossPatterns = [
-    "jumpAttack",
-    "swordAttack",
-    "moveAttack"
+      "jumpAttack",
+      "swordAttack",
+      "moveAttack"
     ];
     // Système d'enchaînement des animations jump
     this.jumpSequence = ['boss_jump1', 'boss_jump2', 'boss_jump3'];
@@ -308,25 +306,25 @@ export default class selection extends Phaser.Scene {
 
     });
 
-  //son attaque épée du boss
-  this.boss.on("animationstart", (anim) => {
-    if (anim.key === "boss_attack") {
-      this.sonAttaqueÉpée.play();
-    }
-  });
-  // son de déplacement du boss
-   this.boss.on("animationstart", (anim) => {
-   if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
-     if (!this.sonGrowl.isPlaying) {
-      this.sonGrowl.play();
-     }
-    }
-  });
-  this.boss.on("animationcomplete", (anim) => {
-  if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
-    this.sonGrowl.stop();
-   }
-  });
+    //son attaque épée du boss
+    this.boss.on("animationstart", (anim) => {
+      if (anim.key === "boss_attack") {
+        this.sonAttaqueÉpée.play();
+      }
+    });
+    // son de déplacement du boss
+    this.boss.on("animationstart", (anim) => {
+      if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
+        if (!this.sonGrowl.isPlaying) {
+          this.sonGrowl.play();
+        }
+      }
+    });
+    this.boss.on("animationcomplete", (anim) => {
+      if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
+        this.sonGrowl.stop();
+      }
+    });
     // Timer pour enchaîner les animations jump toutes les 0.5 secondes
     this.time.addEvent({
       delay: 500, // 0.5 seconde - plus rapide !
@@ -667,6 +665,11 @@ export default class selection extends Phaser.Scene {
         });
       }
     });
+
+
+    this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+    this.add.image(51, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+    this.add.image(86, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
   }
 
   update() {
@@ -781,15 +784,15 @@ export default class selection extends Phaser.Scene {
       hastalkedtomilitaire: this.hastalkedtomilitaire,
       hasgun: hasgun
     });*/
-// changement de direction du blob si mur
+    // changement de direction du blob si mur
     if (this.slime.body.blocked.right) {
-        this.slime.setVelocityX(-80);
-        this.slime.flipX = true;
+      this.slime.setVelocityX(-80);
+      this.slime.flipX = true;
     }
 
     if (this.slime.body.blocked.left) {
-        this.slime.setVelocityX(80);
-        this.slime.flipX = false;
+      this.slime.setVelocityX(80);
+      this.slime.flipX = false;
     }
 
 
