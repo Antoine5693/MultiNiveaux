@@ -26,6 +26,14 @@ var open_portec1_5 = false;
 var porte6;
 var open_portec1_6 = false;
 
+// escaliers1
+var escalier1;
+var open_escalier1 = false;
+
+// escalier2
+var escalier2;
+var open_escalier2 = false;
+
 
 
 
@@ -58,7 +66,7 @@ export default class Couloir1 extends Phaser.Scene {
       frameWidth: 103,
       frameHeight: 128
     });
-this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
+    this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
@@ -70,9 +78,19 @@ this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
-this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
+    this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
+    });
+
+    this.load.image("img_escalier1", "src/assets/escalier.png", {
+      frameWidth: 50,
+      frameHeight: 200
+    });
+
+    this.load.image("img_escalier2", "src/assets/escalier.png", {
+      frameWidth: 50,
+      frameHeight: 200
     });
   }
 
@@ -127,35 +145,44 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
       repeat: 0
     });
 
-      //création de la porte c1_4
-      porte4 = this.physics.add.staticSprite(2861, 1180, "img_porteC1_4", 0);
-      open_portec1_4 = false;
-      this.anims.create({
-        key: "anim_ouvreporte4",
-        frames: this.anims.generateFrameNumbers("img_porteC1_4", { start: 0, end: 7 }),
-        frameRate: 20,
-        repeat: 0
-      });
+    //création de la porte c1_4
+    porte4 = this.physics.add.staticSprite(2861, 1180, "img_porteC1_4", 0);
+    open_portec1_4 = false;
+    this.anims.create({
+      key: "anim_ouvreporte4",
+      frames: this.anims.generateFrameNumbers("img_porteC1_4", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
-      //création de la porte c1_5
-      porte5 = this.physics.add.staticSprite(1805, 1628, "img_porteC1_5", 0);
-      open_portec1_5 = false;
-      this.anims.create({
-        key: "anim_ouvreporte5",
-        frames: this.anims.generateFrameNumbers("img_porteC1_5", { start: 0, end: 7 }),
-        frameRate: 20,
-        repeat: 0
-      });
+    //création de la porte c1_5
+    porte5 = this.physics.add.staticSprite(1805, 1628, "img_porteC1_5", 0);
+    open_portec1_5 = false;
+    this.anims.create({
+      key: "anim_ouvreporte5",
+      frames: this.anims.generateFrameNumbers("img_porteC1_5", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
-        //création de la porte c1_6
-        porte6 = this.physics.add.staticSprite(3149, 1852, "img_porteC1_6", 0);
-        open_portec1_6 = false;
-        this.anims.create({
-          key: "anim_ouvreporte6",
-          frames: this.anims.generateFrameNumbers("img_porteC1_6", { start: 0, end: 7 }),
-          frameRate: 20,
-          repeat: 0
-        });
+    //création de la porte c1_6
+    porte6 = this.physics.add.staticSprite(3149, 1852, "img_porteC1_6", 0);
+    open_portec1_6 = false;
+    this.anims.create({
+      key: "anim_ouvreporte6",
+      frames: this.anims.generateFrameNumbers("img_porteC1_6", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    //création de l'escalier1
+    escalier1 = this.physics.add.staticSprite(3392, 2425, "img_escalier1", 0);
+    open_escalier1 = false;
+
+    //création de l'escalier2 
+    escalier2 = this.physics.add.staticSprite(1280, 2204, "img_escalier2", 0);
+    open_escalier2 = false;
+
 
 
     player = this.physics.add.sprite(2272, 128, "dude.png");
@@ -199,7 +226,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
   update() {
 
 
-    //ouverture des portes
+    //ouverture des portes/escaliers
     if (Phaser.Input.Keyboard.JustDown(interact) == true) {
       //ouverture de la porte 1
       if (open_portec1_1 == false && this.physics.overlap(player, porte1) == true) {
@@ -259,6 +286,22 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
           this.scene.start("Salle06");
         });
         porte6.anims.play("anim_ouvreporte6");
+      }
+
+      if (open_escalier1 == false && this.physics.overlap(player, escalier1) == true) {
+        // le personnage est sur l'escalier1 et vient d'appuyer sur la touche entrée
+        open_escalier1 = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Couloir2");
+        });
+      }
+
+      if (open_escalier2 == false && this.physics.overlap(player, escalier2) == true) {
+        // le personnage est sur l'escalier2 et vient d'appuyer sur la touche entrée
+        open_escalier2 = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Couloir2");
+        });
       }
     }
 
