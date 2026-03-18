@@ -28,13 +28,9 @@ var open_portec1_6 = false;
 
 // escaliers1
 var escalier1;
-var open_escalier1 = false;
 
 // escalier2
 var escalier2;
-var open_escalier2 = false;
-
-
 
 
 export default class Couloir1 extends Phaser.Scene {
@@ -182,8 +178,12 @@ export default class Couloir1 extends Phaser.Scene {
     escalier2 = this.physics.add.staticSprite(1280, 2204, "img_escalier2", 0);
 
 
+    //lieu d'apparition dans la scène couloir1
+    const spawn = this.scene.settings.data || {};
+    const startX = spawn.x ?? 2272;
+    const startY = spawn.y ?? 128;
 
-    player = this.physics.add.sprite(2272, 128, "dude.png");
+    player = this.physics.add.sprite(startX, startY, "dude.png");
     player.refreshBody();
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -286,18 +286,12 @@ export default class Couloir1 extends Phaser.Scene {
         porte6.anims.play("anim_ouvreporte6");
       }
 
-      if (open_escalier1 == false && this.physics.overlap(player, escalier1) == true) {
-        // le personnage est sur l'escalier1 et vient d'appuyer sur la touche entrée
-        open_escalier1 = true;
+      if (this.physics.overlap(player, escalier1) == true) {
         this.scene.start("Couloir2");
-
       }
 
-      if (open_escalier2 == false && this.physics.overlap(player, escalier2) == true) {
-        // le personnage est sur l'escalier2 et vient d'appuyer sur la touche entrée
-        open_escalier2 = true;
+      if (this.physics.overlap(player, escalier2) == true) {
         this.scene.start("Couloir2");
-
       }
     }
 

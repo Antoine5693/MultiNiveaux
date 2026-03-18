@@ -7,6 +7,10 @@ var lastDir = { x: 1, y: 0 };
 var chest_opened = false;
 var interact;
 
+// variables pour la porte de transition vers couloir1
+var porte; // pour la porte de transition vers couloir1
+var open_porte1 = false;//gère l'état de la porte 1
+
 export default class Salle01 extends Phaser.Scene {
   constructor() {
     super({ key: "Salle01" });
@@ -21,9 +25,17 @@ export default class Salle01 extends Phaser.Scene {
       frameWidth: 72,
       frameHeight: 62
     });
+        //asset pour la porte de transition vers couloir1
+    this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
+      frameWidth: 103,
+      frameHeight: 128
+    });
   }
 
   create() {
+
+interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
     chest_opened = false;
     this.isInvincible = false;
 
@@ -42,7 +54,20 @@ export default class Salle01 extends Phaser.Scene {
     this.calque1.setCollisionByProperty({ estSolide: true });
     this.calque3.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(330, 150, "img_perso");
+    //création de la porte
+    porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
+    open_porte1 = false;
+    this.anims.create({
+      key: "anim_ouvreporte1",
+      frames: this.anims.generateFrameNumbers("img_porte1", {
+        start: 0, end: 7
+
+      }),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    player = this.physics.add.sprite(335, 150, "img_perso");
     player.refreshBody();
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -110,6 +135,20 @@ export default class Salle01 extends Phaser.Scene {
   }
 
   update() {
+
+    // interaction avec la porte de transition vers couloir1
+    if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
+      this.physics.overlap(player, porte1) == true) {
+      // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+      open_porte1 = true;
+      this.time.delayedCall(500, () => {
+        // Envoie des coordonnées de respawn à la scène Couloir1
+        this.scene.start("Couloir1", { x: 3520, y: 800 });
+      });
+      porte.anims.play("anim_ouvreporte1");
+    }
+
+
     player.setVelocityX(0);
     player.setVelocityY(0);
 

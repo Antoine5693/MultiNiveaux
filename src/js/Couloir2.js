@@ -197,7 +197,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
             open_portec2_1 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle07");
             });
             porte1.anims.play("anim_ouvreporte1");
           }
@@ -207,7 +207,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
             open_portec2_2 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle08");
             });
             porte2.anims.play("anim_ouvreporte2");
           }
@@ -216,7 +216,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
             open_portec2_3 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle09");
             });
             porte3.anims.play("anim_ouvreporte3");
           }
@@ -225,7 +225,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
             open_portec2_4 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle10");
             });
             porte4.anims.play("anim_ouvreporte4");
           }
@@ -234,7 +234,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
             open_portec2_5 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle01");
             });
             porte5.anims.play("anim_ouvreporte5");
           }
