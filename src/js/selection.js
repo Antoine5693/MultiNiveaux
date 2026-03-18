@@ -54,7 +54,10 @@ export default class selection extends Phaser.Scene {
       frameWidth: 513 / 4,
       frameHeight: 210
     });
-    // Charger le sprite sheet du boss zombie
+
+
+    // Charger le sprite sheet des mobs avec leur sons
+    //boss zombie
     this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
       frameWidth: 154,
       frameHeight: 159
@@ -75,27 +78,42 @@ export default class selection extends Phaser.Scene {
       frameWidth: 168,
       frameHeight: 169
     });
-    this.load.spritesheet("blob_mort", "src/assets/blob mort spritesheet.png", {
+    this.load.spritesheet("boss_moveG", "src/assets/zombiebossdéplacementG.png", {
+      frameWidth: 205,
+      frameHeight: 285
+    });
+    this.load.spritesheet("boss_moveD", "src/assets/zombiebossdéplacementD.png", {
+      frameWidth: 221,
+      frameHeight: 257
+    });
+    this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
+    this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
+
+    //slime
+    this.load.spritesheet("blob_mort", "src/assets/blob mort.png", {
       frameWidth: 68,
       frameHeight: 58
     });
-    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+    this.load.spritesheet("blob_move", "src/assets/blob move.png", {
       frameWidth: 73,
       frameHeight: 52
     });
-    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+    this.load.spritesheet("blob_attaque", "src/assets/blob attaque.png", {
       frameWidth: 79,
       frameHeight: 58
     });
-    this.load.spritesheet("zombie_mort", "src/assets/zombiemort spritesheet.png", {
+    this.load.audio("attaque_blob", "src/assets/slime_attack.mp3");
+    
+
+    this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", {
       frameWidth: 32,
       frameHeight: 30
     });
-    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement spritesheet.png", {
+    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement.png", {
       frameWidth: 30,
       frameHeight: 30
     });
-    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque spritesheet.png", {
+    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque.png", {
       frameWidth: 31,
       frameHeight: 32
     });
@@ -103,10 +121,20 @@ export default class selection extends Phaser.Scene {
       frameWidth: 103,
       frameHeight: 128
     });
+
+
+    this.load.image("Dummy0", "src/assets/Dummy/Dummy0.png");
+    this.load.image("Dummy1", "src/assets/Dummy/Dummy1.png");
+    this.load.image("Dummy2", "src/assets/Dummy/Dummy2.png");
+    this.load.image("Dummy3", "src/assets/Dummy/Dummy3.png");
+    this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
+    this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
+
+
   }
 
 
-  create() {
+create() {
 
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
@@ -115,6 +143,12 @@ export default class selection extends Phaser.Scene {
     bullets = this.physics.add.group({
       allowGravity: false
     });
+    //sons mobs
+    this.sonAttaqueSautée = this.sound.add("son_attaquesautee");
+    this.sonAttaqueÉpée = this.sound.add("son_épée");
+    this.sonAttaqueBlob = this.sound.add("attaque_blob");
+
+
     this.anims.create({
       key: "boss_attack",
       frames: this.anims.generateFrameNumbers("boss_zombie", { start: 0, end: 4 }),
@@ -142,6 +176,21 @@ export default class selection extends Phaser.Scene {
       frameRate: 8,
       repeat: 0
     });
+
+    this.anims.create({
+      key: "boss_moveG",
+      frames: this.anims.generateFrameNumbers("boss_moveG", { start: 0, end: 6 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_moveD",
+      frames: this.anims.generateFrameNumbers("boss_moveD", { start: 0, end: 5 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
 
     this.anims.create({
       key: "boss_mort",
@@ -192,6 +241,20 @@ export default class selection extends Phaser.Scene {
       repeat: 0
     });
 
+    this.anims.create({
+      key: "anim_Dummy",
+      frames: [
+        { key: "Dummy0" },
+        { key: "Dummy1" },
+        { key: "Dummy2" },
+        { key: "Dummy3" },
+        { key: "Dummy4" },
+        { key: "Dummy5" }
+      ],
+      frameRate: 13,
+      repeat: 0
+    });
+
     // Système d'enchaînement des animations jump
     this.jumpSequence = ['boss_jump1', 'boss_jump2', 'boss_jump3'];
     this.currentJumpIndex = 0;
@@ -229,6 +292,22 @@ export default class selection extends Phaser.Scene {
     this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
     console.log("Boss zombie avec animation jump1 créé sur la map !");
 
+    //son attaque sautée du boss
+    this.boss.on("animationstart", (anim) => {
+
+    if (anim.key === "boss_jump2") {
+    this.sonAttaqueSautée.play();
+  }
+
+});
+
+  //son attaque épée du boss
+  this.boss.on("animationstart", (anim) => {
+    if (anim.key === "boss_attack") {
+      this.sonAttaqueÉpée.play();
+    }
+  });
+
     // Timer pour enchaîner les animations jump toutes les 0.5 secondes
     this.time.addEvent({
       delay: 500, // 0.5 seconde - plus rapide !
@@ -243,6 +322,52 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(this.boss, calque3);
     this.physics.add.collider(this.boss, calque4);
 
+    this.anims.create({
+   key: "blob_move_anim",
+   frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+   frameRate: 6,
+   repeat: -1 
+  });
+    // Création du slime
+   this.slime = this.physics.add.sprite(300, 400, "blob_move");
+
+   this.slime.setBounce(1);
+   this.slime.setCollideWorldBounds(true);
+   this.slime.setScale(1.2);
+
+  // lancer l'animation de déplacement
+  this.slime.setVelocityX(80); // vitesse horizontale
+  this.slime.anims.play("blob_move_anim",true).setOrigin(0.5,0.5);
+
+    
+
+  this.physics.add.collider(this.slime, calque1);
+  this.physics.add.collider(this.slime, calque2);
+  this.physics.add.collider(this.slime, calque3);
+  this.physics.add.collider(this.slime, calque4);
+
+  //son move du slime
+   this.slime.lastSoundFrame = -1;
+
+    this.slime.on("animationupdate", (anim, frame, sprite) => {
+    if (anim.key === "blob_move_anim") {
+        // Vérifie si on est à la frame 8
+        if (frame.index === 7 && this.slime.lastSoundFrame !== 7) {
+            this.sonAttaqueBlob.play();
+            this.slime.lastSoundFrame = 7; // marque qu’on a joué le son pour ce cycle
+         }
+        // Réinitialise la variable si on est passé à une autre frame
+        if (frame.index !== 7) {
+            this.slime.lastSoundFrame = frame.index;
+         }
+     }
+ });
+  //son attaque slime
+  this.slime.on("animationstart", (anim) => {
+    if (anim.key === "blob_attaque") {
+      this.sonAttaqueBlob.play();
+     }
+}); 
 
 
 
@@ -349,8 +474,9 @@ export default class selection extends Phaser.Scene {
      ****************************/
 
     // PNJ
-    this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso");
-    this.npc1.setScale(0.5);
+
+    this.npc1 = this.physics.add.staticSprite(150, 150, "npc1");
+    this.npc1.setScale(0.45);
     this.npc1.refreshBody();
 
     this.npc2 = this.physics.add.staticSprite(130, 340, 'npc2');
@@ -364,6 +490,30 @@ export default class selection extends Phaser.Scene {
     this.npc4 = this.physics.add.staticSprite(800, 125, 'npc4');
     this.npc4.setScale(0.40);
     this.npc4.refreshBody();
+
+    this.dummy = this.physics.add.sprite(1200, 440, 'Dummy0');
+    this.dummy.setImmovable(true);
+    this.dummy.refreshBody();
+    this.physics.add.collider(player, this.dummy);
+
+    const widthDummy = this.dummy.displayWidth;
+    const heightDummy = this.dummy.displayHeight;
+
+    this.dummy.setSize(widthDummy / 2, heightDummy); // Ajuste la taille de la hitbox du dummy
+    this.dummy.setOffset(widthDummy / 4, 0); // Décale la hitbox vers le centre du dummy
+    this.dummy.setScale(2);
+    this.physics.add.collider(player, this.dummy);
+    this.physics.add.collider(bullets, this.dummy, (objA, objB) => {
+      // Identifier qui est la balle et qui est le dummy
+      let bullet = objA.texture.key === 'img_rondblanc' ? objA : objB;
+      let dummy = objA.texture.key === 'img_rondblanc' ? objB : objA;
+
+      bullet.disableBody(true, true);
+      dummy.anims.play("anim_Dummy", true);
+      dummy.once('animationcomplete', () => {
+        dummy.setTexture('Dummy0');
+      });
+    });
 
     // Taille complète actuelle
     const width1 = this.npc1.displayWidth;
@@ -438,7 +588,6 @@ export default class selection extends Phaser.Scene {
     }
     ).setOrigin(0.5);
     this.textehomme1.setVisible(false);
-
     this.physics.add.overlap(player, zone2, () => {
       // Afficher le dialogue
       if (Phaser.Input.Keyboard.JustDown(interact)) {
@@ -478,10 +627,19 @@ export default class selection extends Phaser.Scene {
     }
     ).setOrigin(0.5);
     this.textemilitaire.setVisible(false);
+    this.hastalkedtomilitaire = false;
     this.physics.add.overlap(player, zone4, () => {
       // Afficher le dialogue
       if (Phaser.Input.Keyboard.JustDown(interact)) {
-        this.npc4.anims.play("anim_militaire", true);
+        if (!this.hastalkedtomilitaire) {
+          this.npc4.anims.play("anim_militaire", true);
+        }
+        if (!hasgun) {
+          this.textemilitaire.setText("Va parler à la fille pour avoir une arme !");
+        } else {
+          this.textemilitaire.setText("Bonne chance pour la suite !");
+        }
+        this.hastalkedtomilitaire = true;
         this.textemilitaire.setVisible(true);
         this.time.delayedCall(5000, () => {
           this.textemilitaire.setVisible(false);
@@ -589,7 +747,7 @@ export default class selection extends Phaser.Scene {
 
 
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
-      this.physics.overlap(player, porte) == true) {
+      this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
       this.time.delayedCall(500, () => {
