@@ -5,6 +5,7 @@ import Couloir1 from "./js/Couloir1.js";
 import Couloir2 from "./js/Couloir2.js";
 import Couloir3 from "./js/Couloir3.js";
 import BossZone from "./js/BossZone.js";
+import Menu from "./js/Menu.js";
 
 
 var config = {
@@ -22,11 +23,11 @@ var config = {
       debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [selection,niveau1,Salle01,Couloir1,Couloir2,Couloir3,BossZone]  // liste des scenes du jeu : ici une seule scene : selection
+  scene: [Menu,selection,niveau1,Salle01,Couloir1,Couloir2,Couloir3,BossZone]  // liste des scenes du jeu : ici une seule scene : selection
 };
 
 
 // création et lancement du jeu à partir de la configuration config
 var game = new Phaser.Game(config);
-game.scene.start("selection"); // lancement de la scene selection
+game.scene.start("Menu"); // lancement de la scene selection
   
