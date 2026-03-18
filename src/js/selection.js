@@ -54,6 +54,8 @@ export default class selection extends Phaser.Scene {
       frameWidth: 513 / 4,
       frameHeight: 210
     });
+
+
     // Charger le sprite sheet du boss zombie
     this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
       frameWidth: 154,
@@ -103,10 +105,20 @@ export default class selection extends Phaser.Scene {
       frameWidth: 103,
       frameHeight: 128
     });
+
+
+    this.load.image("Dummy0", "src/assets/Dummy/Dummy0.png");
+    this.load.image("Dummy1", "src/assets/Dummy/Dummy1.png");
+    this.load.image("Dummy2", "src/assets/Dummy/Dummy2.png");
+    this.load.image("Dummy3", "src/assets/Dummy/Dummy3.png");
+    this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
+    this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
+
+
   }
 
 
-  create() {
+create() {
 
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
@@ -189,6 +201,20 @@ export default class selection extends Phaser.Scene {
       key: "zombie_attaque",
       frames: this.anims.generateFrameNumbers("zombie_attaque", { start: 0, end: 6 }),
       frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "anim_Dummy",
+      frames: [
+        { key: "Dummy0" },
+        { key: "Dummy1" },
+        { key: "Dummy2" },
+        { key: "Dummy3" },
+        { key: "Dummy4" },
+        { key: "Dummy5" }
+      ],
+      frameRate: 13,
       repeat: 0
     });
 
@@ -348,8 +374,9 @@ export default class selection extends Phaser.Scene {
      ****************************/
 
     // PNJ
-    this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso");
-    this.npc1.setScale(0.5);
+
+    this.npc1 = this.physics.add.staticSprite(150, 150, "npc1");
+    this.npc1.setScale(0.45);
     this.npc1.refreshBody();
 
     this.npc2 = this.physics.add.staticSprite(130, 340, 'npc2');
@@ -363,6 +390,30 @@ export default class selection extends Phaser.Scene {
     this.npc4 = this.physics.add.staticSprite(800, 125, 'npc4');
     this.npc4.setScale(0.40);
     this.npc4.refreshBody();
+
+    this.dummy = this.physics.add.sprite(1200, 440, 'Dummy0');
+    this.dummy.setImmovable(true);
+    this.dummy.refreshBody();
+    this.physics.add.collider(player, this.dummy);
+
+    const widthDummy = this.dummy.displayWidth;
+    const heightDummy = this.dummy.displayHeight;
+
+    this.dummy.setSize(widthDummy / 2, heightDummy); // Ajuste la taille de la hitbox du dummy
+    this.dummy.setOffset(widthDummy / 4, 0); // Décale la hitbox vers le centre du dummy
+    this.dummy.setScale(2);
+    this.physics.add.collider(player, this.dummy);
+    this.physics.add.collider(bullets, this.dummy, (objA, objB) => {
+      // Identifier qui est la balle et qui est le dummy
+      let bullet = objA.texture.key === 'img_rondblanc' ? objA : objB;
+      let dummy = objA.texture.key === 'img_rondblanc' ? objB : objA;
+
+      bullet.disableBody(true, true);
+      dummy.anims.play("anim_Dummy", true);
+      dummy.once('animationcomplete', () => {
+        dummy.setTexture('Dummy0');
+      });
+    });
 
     // Taille complète actuelle
     const width1 = this.npc1.displayWidth;
@@ -437,7 +488,6 @@ export default class selection extends Phaser.Scene {
     }
     ).setOrigin(0.5);
     this.textehomme1.setVisible(false);
-
     this.physics.add.overlap(player, zone2, () => {
       // Afficher le dialogue
       if (Phaser.Input.Keyboard.JustDown(interact)) {
@@ -477,10 +527,14 @@ export default class selection extends Phaser.Scene {
     }
     ).setOrigin(0.5);
     this.textemilitaire.setVisible(false);
+    this.hastalkedtomilitaire = false;
     this.physics.add.overlap(player, zone4, () => {
       // Afficher le dialogue
       if (Phaser.Input.Keyboard.JustDown(interact)) {
-        this.npc4.anims.play("anim_militaire", true);
+        if (!this.hastalkedtomilitaire) {
+          this.npc4.anims.play("anim_militaire", true);
+        }
+        this.hastalkedtomilitaire = true;
         this.textemilitaire.setVisible(true);
         this.time.delayedCall(5000, () => {
           this.textemilitaire.setVisible(false);
