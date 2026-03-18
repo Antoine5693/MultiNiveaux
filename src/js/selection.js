@@ -534,6 +534,11 @@ create() {
         if (!this.hastalkedtomilitaire) {
           this.npc4.anims.play("anim_militaire", true);
         }
+        if (!hasgun) {
+          this.textemilitaire.setText("Va parler à la fille pour avoir une arme !");
+        } else {
+          this.textemilitaire.setText("Bonne chance pour la suite !");
+        }
         this.hastalkedtomilitaire = true;
         this.textemilitaire.setVisible(true);
         this.time.delayedCall(5000, () => {
@@ -642,7 +647,7 @@ create() {
 
 
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
-      this.physics.overlap(player, porte) == true) {
+      this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
       porte.anims.play("anim_ouvreporte1");
