@@ -13,7 +13,7 @@ export default class Salle09 extends Phaser.Scene {
     // assets pour le tilemap
     this.load.image("B", "src/assets/Background.png");
     this.load.image("D", "src/assets/Dela_dec2.png");
-    this.load.tilemapTiledJSON("carte2", "src/assets/Salle01.tmj");
+    this.load.tilemapTiledJSON("carte09", "src/assets/Salle01.tmj");
   }
 
   create() {
@@ -24,7 +24,7 @@ export default class Salle09 extends Phaser.Scene {
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap( "carte2" );
+    const map = this.add.tilemap( "carte09" );
     const tileset1 = map.addTilesetImage("Background", "B");
     const tileset3 = map.addTilesetImage("1", "D");
     const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);

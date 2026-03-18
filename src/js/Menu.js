@@ -60,9 +60,9 @@ export default class Menu extends Phaser.Scene {
 
 
     //Cas ou la sourris clique sur le bouton exit :
-    // on lance le niveau 1
-    bouton_play.on("pointerup", () => {
-      this.scene.start("selection");
+    // on ferme le jeu
+    bouton_exit.on("pointerup", () => {
+      this.game.destroy();
     });
   }
 } 

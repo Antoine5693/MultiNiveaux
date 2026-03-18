@@ -99,6 +99,22 @@ export default class Salle01 extends Phaser.Scene {
     });
     // Spawn des ennemis
     this.spawnEnemies();
+
+    // Récupère les HP depuis le registry
+    let hp = this.registry.get('hp');
+
+    // Affiche les coeurs (pleins ou vides selon les HP restants)
+    this.hearts = [];
+    for (let i = 0; i < 3; i++) {
+      let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
+        .setScale(0.09)
+        .setOrigin(0, 0)
+        .setScrollFactor(0);
+      this.hearts.push(h);
+    }
+    this.physics.add.overlap(player, this.enemies, () => {
+      this.takeDamage();
+    }, null, this);
   }
 
   update() {
@@ -144,7 +160,7 @@ export default class Salle01 extends Phaser.Scene {
     }
     wasSpaceDown = this.keySpace.isDown;
 
-    
+
 
     // Les 3 zombies poursuivent le joueur
     this.zombies.forEach(zombie => {
@@ -159,6 +175,7 @@ export default class Salle01 extends Phaser.Scene {
         zombie.setVelocity(0);
         if (zombie.anims.currentAnim?.key !== "zombie_attaque") {
           zombie.anims.play("zombie_attaque", true);
+          this.takeDamage();
         }
       } else {
         let angle = Phaser.Math.Angle.Between(
@@ -249,5 +266,46 @@ export default class Salle01 extends Phaser.Scene {
     if (this.enemies.countActive() === 0) {
       this.spawnChest();
     }
+  }
+
+  takeDamage() {
+    if (this.isInvincible) return;
+
+    let hp = this.registry.get('hp');
+    if (hp <= 0) return;
+
+    hp -= 1;
+    this.registry.set('hp', hp);
+
+    this.hearts[hp].setTexture("empty_heart");
+
+    this.isInvincible = true;
+
+    // ✅ Clignotement démarre immédiatement
+    this.tweens.add({
+      targets: player,
+      alpha: 0,
+      duration: 100,
+      yoyo: true,
+      repeat: 9,
+      onComplete: () => {
+        player.setAlpha(1);
+      }
+    });
+
+    // ✅ Invincibilité se termine après 2 secondes
+    this.time.delayedCall(2000, () => {
+      this.isInvincible = false;
+    });
+
+    if (hp <= 0) {
+      this.scene.start("Menu");
+    }
+
+
+    if (hp <= 0) {
+      this.scene.start("Menu");
+    }
+
   }
 }

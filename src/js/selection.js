@@ -152,7 +152,7 @@ export default class selection extends Phaser.Scene {
     this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
     this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
 
-
+    this.load.image("empty_heart", "src/assets/empty_heart.png"); 
   }
 
 
@@ -737,7 +737,8 @@ this.physics.add.collider(this.rodeur, calque4);
       }
     });
 
-
+      // Initialisation de la vie du joueur à 3 et affichage des coeurs
+    this.registry.set('hp', 3);
     this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(51, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(86, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
