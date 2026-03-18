@@ -17,8 +17,8 @@ var P;
 var V;
 var O;
 var U;
-var porte; // pour la porte de transition vers le niveau 2
 var interact;
+var porte; // pour la porte de transition vers le niveau 2
 var open_porte1 = false;//gère l'état de la porte 1
 
 export default class selection extends Phaser.Scene {
@@ -103,7 +103,7 @@ export default class selection extends Phaser.Scene {
       frameHeight: 58
     });
     this.load.audio("attaque_blob", "src/assets/slime_attack.mp3");
-    
+
 
     this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", {
       frameWidth: 32,
@@ -134,7 +134,7 @@ export default class selection extends Phaser.Scene {
   }
 
 
-create() {
+  create() {
 
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
@@ -295,18 +295,18 @@ create() {
     //son attaque sautée du boss
     this.boss.on("animationstart", (anim) => {
 
-    if (anim.key === "boss_jump2") {
-    this.sonAttaqueSautée.play();
-  }
+      if (anim.key === "boss_jump2") {
+        this.sonAttaqueSautée.play();
+      }
 
-});
+    });
 
-  //son attaque épée du boss
-  this.boss.on("animationstart", (anim) => {
-    if (anim.key === "boss_attack") {
-      this.sonAttaqueÉpée.play();
-    }
-  });
+    //son attaque épée du boss
+    this.boss.on("animationstart", (anim) => {
+      if (anim.key === "boss_attack") {
+        this.sonAttaqueÉpée.play();
+      }
+    });
 
     // Timer pour enchaîner les animations jump toutes les 0.5 secondes
     this.time.addEvent({
@@ -323,51 +323,51 @@ create() {
     this.physics.add.collider(this.boss, calque4);
 
     this.anims.create({
-   key: "blob_move_anim",
-   frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
-   frameRate: 6,
-   repeat: -1 
-  });
+      key: "blob_move_anim",
+      frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+      frameRate: 6,
+      repeat: -1
+    });
     // Création du slime
-   this.slime = this.physics.add.sprite(300, 400, "blob_move");
+    this.slime = this.physics.add.sprite(300, 400, "blob_move");
 
-   this.slime.setBounce(1);
-   this.slime.setCollideWorldBounds(true);
-   this.slime.setScale(1.2);
+    this.slime.setBounce(1);
+    this.slime.setCollideWorldBounds(true);
+    this.slime.setScale(1.2);
 
-  // lancer l'animation de déplacement
-  this.slime.setVelocityX(80); // vitesse horizontale
-  this.slime.anims.play("blob_move_anim",true).setOrigin(0.5,0.5);
+    // lancer l'animation de déplacement
+    this.slime.setVelocityX(80); // vitesse horizontale
+    this.slime.anims.play("blob_move_anim", true).setOrigin(0.5, 0.5);
 
-    
 
-  this.physics.add.collider(this.slime, calque1);
-  this.physics.add.collider(this.slime, calque2);
-  this.physics.add.collider(this.slime, calque3);
-  this.physics.add.collider(this.slime, calque4);
 
-  //son move du slime
-   this.slime.lastSoundFrame = -1;
+    this.physics.add.collider(this.slime, calque1);
+    this.physics.add.collider(this.slime, calque2);
+    this.physics.add.collider(this.slime, calque3);
+    this.physics.add.collider(this.slime, calque4);
+
+    //son move du slime
+    this.slime.lastSoundFrame = -1;
 
     this.slime.on("animationupdate", (anim, frame, sprite) => {
-    if (anim.key === "blob_move_anim") {
+      if (anim.key === "blob_move_anim") {
         // Vérifie si on est à la frame 8
         if (frame.index === 7 && this.slime.lastSoundFrame !== 7) {
-            this.sonAttaqueBlob.play();
-            this.slime.lastSoundFrame = 7; // marque qu’on a joué le son pour ce cycle
-         }
+          this.sonAttaqueBlob.play();
+          this.slime.lastSoundFrame = 7; // marque qu’on a joué le son pour ce cycle
+        }
         // Réinitialise la variable si on est passé à une autre frame
         if (frame.index !== 7) {
-            this.slime.lastSoundFrame = frame.index;
-         }
-     }
- });
-  //son attaque slime
-  this.slime.on("animationstart", (anim) => {
-    if (anim.key === "blob_attaque") {
-      this.sonAttaqueBlob.play();
-     }
-}); 
+          this.slime.lastSoundFrame = frame.index;
+        }
+      }
+    });
+    //son attaque slime
+    this.slime.on("animationstart", (anim) => {
+      if (anim.key === "blob_attaque") {
+        this.sonAttaqueBlob.play();
+      }
+    });
 
 
 
@@ -383,10 +383,12 @@ create() {
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
     open_porte1 = false;
-    //this.porte.setscale(0.5);
     this.anims.create({
       key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+      frames: this.anims.generateFrameNumbers("img_porte1", {
+        start: 0, end: 7
+
+      }),
       frameRate: 20,
       repeat: 0
     });
@@ -745,7 +747,7 @@ create() {
       this.scene.start("Salle01");
     }
 
-
+    //ouverture de la porte et transition vers couloir
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
       this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée

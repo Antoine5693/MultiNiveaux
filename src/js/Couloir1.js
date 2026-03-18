@@ -1,9 +1,17 @@
 var player;
 var clavier; 
 var enter;
+var interact; // touche pour interagir avec les éléments du jeu
+// variables pour la porte c1_1
 var porte1;
 var open_portec1_1 = false;
-var interact; // touche pour interagir avec les éléments du jeu
+
+// variables pour la porte c1_2
+var porte2;
+var open_portec1_2 = false;
+
+
+
 
 export default class Couloir1 extends Phaser.Scene {
   // constructeur de la classe
@@ -24,10 +32,18 @@ export default class Couloir1 extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48
     });
+
+    // assets des portes
     this.load.spritesheet("img_porteC1_1", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
+    this.load.spritesheet("img_porteC1_2", "src/assets/porte1finie.png", {
+      frameWidth: 103,
+      frameHeight: 128
+    });
+
+
   }
 
   create() {
@@ -56,7 +72,17 @@ export default class Couloir1 extends Phaser.Scene {
     open_portec1_1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porteC1_1", { start: 0, end: 8 }),
+      frames: this.anims.generateFrameNumbers("img_porteC1_1", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    //création de la porte c1_2
+    porte2 = this.physics.add.staticSprite(3533, 732, "img_porteC1_2", 0);
+    open_portec1_2 = false;
+    this.anims.create({
+      key: "anim_ouvreporte2",
+      frames: this.anims.generateFrameNumbers("img_porteC1_2", { start: 0, end: 7 }),
       frameRate: 20,
       repeat: 0
     });
@@ -110,6 +136,17 @@ export default class Couloir1 extends Phaser.Scene {
         this.scene.start("selection");
       });
       porte1.anims.play("anim_ouvreporte1");
+    }
+
+    //ouverture de la porte 2
+    if (open_portec1_2 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
+      this.physics.overlap(player, porte2) == true) {
+      // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
+      open_portec1_2 = true;
+      this.time.delayedCall(500, () => {
+        this.scene.start("selection");
+      });
+      porte2.anims.play("anim_ouvreporte2");
     }
 
 
