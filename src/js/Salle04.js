@@ -2,11 +2,11 @@ var player;
 var clavier; 
 var enter;
 
-export default class Salle01 extends Phaser.Scene {
+export default class Salle04 extends Phaser.Scene {
   // constructeur de la classe
   constructor() {
     super({
-      key: "Salle01" //  ici on précise le nom de la classe en tant qu'identifiant
+      key: "Salle04" //  ici on précise le nom de la classe en tant qu'identifiant
     });
   }
   preload() {

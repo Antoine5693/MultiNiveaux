@@ -2,18 +2,18 @@ var player;
 var clavier; 
 var enter;
 
-export default class Salle01 extends Phaser.Scene {
+export default class Salle14 extends Phaser.Scene {
   // constructeur de la classe
   constructor() {
     super({
-      key: "Salle01" //  ici on précise le nom de la classe en tant qu'identifiant
+      key: "Salle14" //  ici on précise le nom de la classe en tant qu'identifiant
     });
   }
   preload() {
     // assets pour le tilemap
     this.load.image("B", "src/assets/Background.png");
     this.load.image("D", "src/assets/Dela_dec2.png");
-    this.load.tilemapTiledJSON("carte2", "src/assets/Salle01.tmj");
+    this.load.tilemapTiledJSON("carte14", "src/assets/Salle01.tmj");
   }
 
   create() {
@@ -24,7 +24,7 @@ export default class Salle01 extends Phaser.Scene {
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap( "carte2" );
+    const map = this.add.tilemap( "carte14" );
     const tileset1 = map.addTilesetImage("Background", "B");
     const tileset3 = map.addTilesetImage("1", "D");
     const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);
