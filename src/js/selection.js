@@ -120,6 +120,8 @@ export default class selection extends Phaser.Scene {
       frameWidth: 31,
       frameHeight: 32
     });
+    this.load.audio("son_zombie_attaque", "src/assets/zombie_attack_sound.mp3");
+    this.load.audio("zombie_mort", "src/assets/zombie_dying_sound.mp3");
     this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
@@ -151,6 +153,8 @@ create() {
     this.sonAttaqueÉpée = this.sound.add("son_épée");
     this.sonAttaqueBlob = this.sound.add("attaque_blob");
     this.sonGrowl = this.sound.add("growl");
+    this.sonZombieAttaque = this.sound.add("son_zombie_attaque");
+    this.sonZombieMort = this.sound.add("zombie_mort");
 
     this.anims.create({
       key: "boss_attack",
@@ -387,8 +391,19 @@ create() {
       this.sonAttaqueBlob.play();
      }
 }); 
+  //creation zombie
+  this.zombie = this.physics.add.sprite(500, 350, "zombie_deplacement");
 
+  this.zombie.setScale(2.9);
+  this.zombie.setCollideWorldBounds(true);
+  this.zombie.setBounce(1);
 
+  // animation de déplacement
+  this.zombie.anims.play("zombie_deplacement", true);
+  this.physics.add.collider(this.zombie, calque1);
+  this.physics.add.collider(this.zombie, calque2);
+  this.physics.add.collider(this.zombie, calque3);
+  this.physics.add.collider(this.zombie, calque4);
 
     // Gestion du clavier
     clavier = this.input.keyboard.createCursorKeys();
@@ -774,18 +789,7 @@ create() {
       });
       porte.anims.play("anim_ouvreporte1");
     }
-
-// changement de direction du blob si mur
-    if (this.slime.body.blocked.right) {
-        this.slime.setVelocityX(-80);
-        this.slime.flipX = true;
-    }
-
-    if (this.slime.body.blocked.left) {
-        this.slime.setVelocityX(80);
-        this.slime.flipX = false;
-    }
-
+    
 
     if (Phaser.Input.Keyboard.JustDown(P) == true) {
       this.scene.start("Couloir1");
