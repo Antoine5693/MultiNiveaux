@@ -26,6 +26,14 @@ var open_portec1_5 = false;
 var porte6;
 var open_portec1_6 = false;
 
+// escaliers1
+var escalier1;
+var open_escalier1 = false;
+
+// escalier2
+var escalier2;
+var open_escalier2 = false;
+
 
 
 
@@ -72,6 +80,16 @@ this.load.spritesheet("img_porteC1_3", "src/assets/porte1finie.png", {
     });
 this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
       frameWidth: 103,
+      frameHeight: 128
+    });
+
+    this.load.spritesheet("img_escalier1", "src/assets/escalier.png", {
+      frameWidth: 206,
+      frameHeight: 128
+    });
+
+    this.load.spritesheet("img_escalier2", "src/assets/escalier.png", {
+      frameWidth: 206,
       frameHeight: 128
     });
   }
@@ -157,6 +175,15 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
           repeat: 0
         });
 
+        //création de l'escalier1
+        escalier1 = this.physics.add.staticSprite(2272, 128, "img_escalier1", 0);
+        open_escalier1 = false;
+
+          //création de l'escalier2 
+          escalier2 = this.physics.add.staticSprite(2272, 128, "img_escalier2", 0);
+          open_escalier2 = false;
+
+
 
     player = this.physics.add.sprite(2272, 128, "dude.png");
     player.refreshBody();
@@ -199,7 +226,7 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
   update() {
 
 
-    //ouverture des portes
+    //ouverture des portes/escaliers
     if (Phaser.Input.Keyboard.JustDown(interact) == true) {
       //ouverture de la porte 1
       if (open_portec1_1 == false && this.physics.overlap(player, porte1) == true) {
@@ -259,6 +286,22 @@ this.load.spritesheet("img_porteC1_6", "src/assets/porte1finie.png", {
           this.scene.start("Salle06");
         });
         porte6.anims.play("anim_ouvreporte6");
+      }
+
+      if (open_escalier1 == false && this.physics.overlap(player, escalier1) == true) {
+        // le personnage est sur l'escalier1 et vient d'appuyer sur la touche entrée
+        open_escalier1 = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Couloir2");
+        });
+      }
+
+      if (open_escalier2 == false && this.physics.overlap(player, escalier2) == true) {
+        // le personnage est sur l'escalier2 et vient d'appuyer sur la touche entrée
+        open_escalier2 = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Couloir2");
+        });
       }
     }
 
