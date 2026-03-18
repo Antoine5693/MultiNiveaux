@@ -17,8 +17,9 @@ var P;
 var V;
 var O;
 var U;
-var porte; // pour la porte de transition vers le niveau 2
+var E;
 var interact;
+var porte; // pour la porte de transition vers le niveau 2
 var open_porte1 = false;//gère l'état de la porte 1
 
 export default class selection extends Phaser.Scene {
@@ -34,7 +35,12 @@ export default class selection extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48
     });
-    this.load.image("img_rondblanc", "src/assets/rondblanc.png");
+    this.load.image("img_balle", "src/assets/bullet.png", {
+      frameWidth: 46,
+      frameHeight: 21
+    });
+    this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
+
     this.load.image("img_heart", "src/assets/heart.png");
     this.load.spritesheet("img_chest_anim", "src/assets/caisse.png", {
       frameWidth: 72,
@@ -56,7 +62,8 @@ export default class selection extends Phaser.Scene {
     });
 
 
-    // Charger le sprite sheet du boss zombie
+    // Charger le sprite sheet des mobs avec leur sons
+    //boss zombie
     this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
       frameWidth: 154,
       frameHeight: 159
@@ -77,35 +84,67 @@ export default class selection extends Phaser.Scene {
       frameWidth: 168,
       frameHeight: 169
     });
-    this.load.spritesheet("blob_mort", "src/assets/blob mort spritesheet.png", {
+    this.load.spritesheet("boss_moveG", "src/assets/zombiebossdéplacementG.png", {
+      frameWidth: 205,
+      frameHeight: 285
+    });
+    this.load.spritesheet("boss_moveD", "src/assets/zombiebossdéplacementD.png", {
+      frameWidth: 221,
+      frameHeight: 257
+    });
+    this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
+    this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
+    this.load.audio("growl", "src/assets/growling_sound.mp3");
+
+    //slime
+
+    this.load.spritesheet("blob_mort", "src/assets/blob mort.png", {
       frameWidth: 68,
       frameHeight: 58
     });
-    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
-      frameWidth: 73,
-      frameHeight: 52
+
+    this.load.spritesheet("blob_move", "src/assets/blob move.png", {
+      frameWidth: 25,
+      frameHeight: 51,
+      spacing: 24
     });
-    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+
+    this.load.spritesheet("blob_attaque", "src/assets/blob attaque.png", {
       frameWidth: 79,
       frameHeight: 58
     });
-    this.load.spritesheet("zombie_mort", "src/assets/zombiemort spritesheet.png", {
+    this.load.audio("attaque_blob", "src/assets/slime_attack.mp3");
+
+
+    this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", {
       frameWidth: 32,
       frameHeight: 30
     });
-    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement spritesheet.png", {
+    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement.png", {
       frameWidth: 30,
       frameHeight: 30
     });
-    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque spritesheet.png", {
+    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque.png", {
       frameWidth: 31,
       frameHeight: 32
     });
+    this.load.audio("son_zombie_attaque", "src/assets/zombie_attack_sound.mp3");
+    this.load.audio("zombie_mort", "src/assets/zombie_dying_sound.mp3");
     this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
 
+    this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png",{
+        frameWidth: 151,
+        frameHeight: 178
+    });
+
+    this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png",{
+        frameWidth: 160,
+        frameHeight: 162
+    });
+    this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
 
     this.load.image("Dummy0", "src/assets/Dummy/Dummy0.png");
     this.load.image("Dummy1", "src/assets/Dummy/Dummy1.png");
@@ -114,19 +153,26 @@ export default class selection extends Phaser.Scene {
     this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
     this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
 
-
+    this.load.image("empty_heart", "src/assets/empty_heart.png"); 
   }
 
 
-create() {
+  create() {
 
-    this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
-    this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
-    this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
+
 
     bullets = this.physics.add.group({
       allowGravity: false
     });
+    //sons mobs
+    this.sonAttaqueSautée = this.sound.add("son_attaquesautee");
+    this.sonAttaqueÉpée = this.sound.add("son_épée");
+    this.sonAttaqueBlob = this.sound.add("attaque_blob");
+    this.sonGrowl = this.sound.add("growl");
+    this.sonZombieAttaque = this.sound.add("son_zombie_attaque");
+    this.sonZombieMort = this.sound.add("zombie_mort");
+    this.sonTir = this.sound.add("son_tir");
+
     this.anims.create({
       key: "boss_attack",
       frames: this.anims.generateFrameNumbers("boss_zombie", { start: 0, end: 4 }),
@@ -154,6 +200,21 @@ create() {
       frameRate: 8,
       repeat: 0
     });
+
+    this.anims.create({
+      key: "boss_moveG",
+      frames: this.anims.generateFrameNumbers("boss_moveG", { start: 0, end: 6 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_moveD",
+      frames: this.anims.generateFrameNumbers("boss_moveD", { start: 0, end: 5 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
 
     this.anims.create({
       key: "boss_mort",
@@ -205,6 +266,20 @@ create() {
     });
 
     this.anims.create({
+  key: "rodeurDroite",
+  frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+ });
+
+ this.anims.create({
+  key: "rodeurGauche",
+  frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+ });
+
+    this.anims.create({
       key: "anim_Dummy",
       frames: [
         { key: "Dummy0" },
@@ -217,7 +292,11 @@ create() {
       frameRate: 13,
       repeat: 0
     });
-
+    this.bossPatterns = [
+      "jumpAttack",
+      "swordAttack",
+      "moveAttack"
+    ];
     // Système d'enchaînement des animations jump
     this.jumpSequence = ['boss_jump1', 'boss_jump2', 'boss_jump3'];
     this.currentJumpIndex = 0;
@@ -247,6 +326,7 @@ create() {
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
 
+
     // Création du boss zombie sur la map
     this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
     this.boss.setScale(1.5); // taille du boss
@@ -255,6 +335,34 @@ create() {
     this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
     console.log("Boss zombie avec animation jump1 créé sur la map !");
 
+    //son attaque sautée du boss
+    this.boss.on("animationstart", (anim) => {
+
+      if (anim.key === "boss_jump2") {
+        this.sonAttaqueSautée.play();
+      }
+
+    });
+
+    //son attaque épée du boss
+    this.boss.on("animationstart", (anim) => {
+      if (anim.key === "boss_attack") {
+        this.sonAttaqueÉpée.play();
+      }
+    });
+    // son de déplacement du boss
+    this.boss.on("animationstart", (anim) => {
+      if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
+        if (!this.sonGrowl.isPlaying) {
+          this.sonGrowl.play();
+        }
+      }
+    });
+    this.boss.on("animationcomplete", (anim) => {
+      if (anim.key === "boss_moveG" || anim.key === "boss_moveD") {
+        this.sonGrowl.stop();
+      }
+    });
     // Timer pour enchaîner les animations jump toutes les 0.5 secondes
     this.time.addEvent({
       delay: 500, // 0.5 seconde - plus rapide !
@@ -269,6 +377,86 @@ create() {
     this.physics.add.collider(this.boss, calque3);
     this.physics.add.collider(this.boss, calque4);
 
+    this.anims.create({
+      key: "blob_move_anim",
+      frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+      frameRate: 6,
+      repeat: -1
+    });
+    // Création du slime
+    this.slime = this.physics.add.sprite(300, 400, "blob_move");
+
+    this.slime.setBounce(1);
+    this.slime.setCollideWorldBounds(true);
+    this.slime.setScale(1.2);
+
+    // lancer l'animation de déplacement
+    this.slime.setVelocityX(80); // vitesse horizontale
+    this.slime.anims.play("blob_move_anim", true).setOrigin(0.5, 0.5);
+
+
+
+    this.physics.add.collider(this.slime, calque1);
+    this.physics.add.collider(this.slime, calque2);
+    this.physics.add.collider(this.slime, calque3);
+    this.physics.add.collider(this.slime, calque4);
+
+    //son move du slime
+    this.slime.lastSoundFrame = -1;
+
+    this.slime.on("animationupdate", (anim, frame, sprite) => {
+      if (anim.key === "blob_move_anim") {
+        // Vérifie si on est à la frame 1
+        if (frame.index === 1 && this.slime.lastSoundFrame !== 1) {
+          this.sonAttaqueBlob.play();
+          this.slime.lastSoundFrame = 1; // marque qu’on a joué le son pour ce cycle
+        }
+        // Réinitialise la variable si on est passé à une autre frame
+        if (frame.index !== 1) {
+
+          this.slime.lastSoundFrame = frame.index;
+        }
+      }
+    });
+    //son attaque slime
+    this.slime.on("animationstart", (anim) => {
+      if (anim.key === "blob_attaque") {
+        this.sonAttaqueBlob.play();
+      }
+    });
+    //creation zombie
+    this.zombie = this.physics.add.sprite(500, 350, "zombie_deplacement");
+
+
+
+    this.zombie.setScale(2.9);
+    this.zombie.setCollideWorldBounds(true);
+    this.zombie.setBounce(1);
+
+    // animation de déplacement
+    this.zombie.anims.play("zombie_deplacement", true);
+    this.physics.add.collider(this.zombie, calque1);
+    this.physics.add.collider(this.zombie, calque2);
+    this.physics.add.collider(this.zombie, calque3);
+    this.physics.add.collider(this.zombie, calque4);
+
+ 
+ this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
+
+this.rodeur.setScale(0.6);
+this.rodeur.setCollideWorldBounds(true);
+this.rodeur.setBounce(1);
+this.sonRodeur = this.sound.add("son_rodeur", {
+  loop: true,
+  volume: 1.8
+});
+this.sonRodeur.play();
+this.rodeur.setVelocityX(100);
+this.rodeur.anims.play("rodeurDroite", true);
+this.physics.add.collider(this.rodeur, calque1);
+this.physics.add.collider(this.rodeur, calque2);
+this.physics.add.collider(this.rodeur, calque3);
+this.physics.add.collider(this.rodeur, calque4);
 
 
 
@@ -280,13 +468,17 @@ create() {
     V = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
     O = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);
     U = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
+    E = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
-    //this.porte.setscale(0.5);
+    open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+      frames: this.anims.generateFrameNumbers("img_porte1", {
+        start: 0, end: 7
+
+      }),
       frameRate: 20,
       repeat: 0
     });
@@ -374,6 +566,7 @@ create() {
      ****************************/
 
     // PNJ
+
     this.npc1 = this.physics.add.staticSprite(150, 150, "npc1");
     this.npc1.setScale(0.45);
     this.npc1.refreshBody();
@@ -404,8 +597,8 @@ create() {
     this.physics.add.collider(player, this.dummy);
     this.physics.add.collider(bullets, this.dummy, (objA, objB) => {
       // Identifier qui est la balle et qui est le dummy
-      let bullet = objA.texture.key === 'img_rondblanc' ? objA : objB;
-      let dummy = objA.texture.key === 'img_rondblanc' ? objB : objA;
+      let bullet = objA.texture.key === 'img_balle' ? objA : objB;
+      let dummy = objA.texture.key === 'img_balle' ? objB : objA;
 
       bullet.disableBody(true, true);
       dummy.anims.play("anim_Dummy", true);
@@ -533,6 +726,11 @@ create() {
         if (!this.hastalkedtomilitaire) {
           this.npc4.anims.play("anim_militaire", true);
         }
+        if (!hasgun) {
+          this.textemilitaire.setText("Va parler à la fille pour avoir une arme !");
+        } else {
+          this.textemilitaire.setText("Bonne chance pour la suite !");
+        }
         this.hastalkedtomilitaire = true;
         this.textemilitaire.setVisible(true);
         this.time.delayedCall(5000, () => {
@@ -540,6 +738,13 @@ create() {
         });
       }
     });
+
+      // Initialisation de la vie du joueur à 3 et affichage des coeurs
+    this.registry.set('hp', 3);
+    this.registry.set('hpMax', 3);
+    this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+    this.add.image(51, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+    this.add.image(86, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
   }
 
   update() {
@@ -579,9 +784,9 @@ create() {
 
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired && hasgun) {
 
-      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
-      bullet.setScale(0.05);
-
+      let bullet = bullets.create(player.x, player.y, "img_balle");
+      bullet.setScale(0.25);
+      this.sonTir.play();
       // Tirer dans la direction où regarde le joueur
       bullet.setVelocityX(400 * lastDir.x);
       bullet.setVelocityY(400 * lastDir.y);
@@ -590,60 +795,49 @@ create() {
     }
 
     wasSpaceDown = this.keySpace.isDown;
-    // horizontal
-    if (clavier.left.isDown) {
-      player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
-    } else if (clavier.right.isDown) {
-      player.setVelocityX(160);
-      player.anims.play("anim_tourne_droite", true);
-    }
 
-    // vertical
-    if (clavier.up.isDown) {
-      player.setVelocityY(-160);
-    } else if (clavier.down.isDown) {
-      player.setVelocityY(160);
-    }
+    let distanceX = player.x - this.rodeur.x;
+let distanceY = player.y - this.rodeur.y;
 
-    // idling
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
-    }
+let vitesse = 60;
 
-    // Update lastDir based on pressed keys
-    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
-      lastDir.x = 0;
-      lastDir.y = 0;
-      if (clavier.left.isDown) lastDir.x = -1;
-      if (clavier.right.isDown) lastDir.x = 1;
-      if (clavier.up.isDown) lastDir.y = -1;
-      if (clavier.down.isDown) lastDir.y = 1;
-    }
+// mouvement horizontal
+if (distanceX > 5) {
+    this.rodeur.setVelocityX(vitesse);
+    this.rodeur.anims.play("rodeurDroite", true);
+}
+else if (distanceX < -5) {
+    this.rodeur.setVelocityX(-vitesse);
+    this.rodeur.anims.play("rodeurGauche", true);
+}
+else {
+    this.rodeur.setVelocityX(0);
+}
 
-    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
-
-      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
-      bullet.setScale(0.05);
-
-      // Tirer dans la direction où regarde le joueur
-      bullet.setVelocityX(400 * lastDir.x);
-      bullet.setVelocityY(400 * lastDir.y);
-
-      lastFired = this.time.now + 300;
-    }
-
-    wasSpaceDown = this.keySpace.isDown;
+// mouvement vertical
+if (distanceY > 5) {
+    this.rodeur.setVelocityY(vitesse);
+}
+else if (distanceY < -5) {
+    this.rodeur.setVelocityY(-vitesse);
+}
+else {
+    this.rodeur.setVelocityY(0);
+}
 
     if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
       this.scene.start("Salle01");
     }
 
+    //ouverture de la porte et transition vers couloir
 
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
-      this.physics.overlap(player, porte) == true) {
+      this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
+      this.time.delayedCall(500, () => {
+        this.scene.start("Couloir1");
+      });
       porte.anims.play("anim_ouvreporte1");
     }
 
@@ -659,6 +853,9 @@ create() {
     }
     if (Phaser.Input.Keyboard.JustDown(U) == true) {
       this.scene.start("BossZone");
+    }
+    if (Phaser.Input.Keyboard.JustDown(E) == true) {
+      this.scene.start("Salle02");
     }
   }
 }
