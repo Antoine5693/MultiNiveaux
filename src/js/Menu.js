@@ -13,6 +13,8 @@ export default class Menu extends Phaser.Scene {
   create() {
 
    this.sound.stopByKey("son_rodeur");
+   this.sound.stopByKey("musique_ambiance");
+   this.sound.stopByKey("Victory_theme");
    this.sound.stopByKey("attaque_blob");
    this.sound.stopByKey("son_zombie_attaque");
    // on place les éléments de fond

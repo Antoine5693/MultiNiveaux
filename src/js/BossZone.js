@@ -43,9 +43,14 @@ export default class BossZone extends Phaser.Scene {
     this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
     this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
     this.load.audio("growl", "src/assets/growling_sound.mp3");
+
+    this.load.audio("musique_boss", "src/assets/musique_boss.mp3");
+    this.load.audio("Victory_theme", "src/assets/Victory_theme.mp3");
+    this.load.image("credits", "src/assets/CREDIT.png");
   }
 
   create() {
+    this.sound.stopByKey("musique_ambiance");
     this.sound.stopByKey("son_rodeur");
     console.log("Texture moveG existe ?", this.textures.exists("boss_moveG"));
     console.log("Texture moveD existe ?", this.textures.exists("boss_moveD"));
@@ -53,7 +58,7 @@ export default class BossZone extends Phaser.Scene {
     this.attackDistance = 80;
     this.patternTimer = 0;
 
-
+    this.bossRevealed = false;
 
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -328,6 +333,17 @@ export default class BossZone extends Phaser.Scene {
   takeDamage() {
     if (this.isInvincible) return;
 
+    if (!this.bossRevealed) {
+      this.bossRevealed = true;
+      let ambiance = this.sound.get("musique_ambiance");
+      if (ambiance) ambiance.stop();
+      if (!this.sound.get("musique_boss")) {
+        this.sound.add("musique_boss", { loop: true, volume: 0.4 }).play();
+      } else {
+        this.sound.get("musique_boss").play();
+      }
+    }
+
     let hp = this.registry.get('hp');
     if (hp <= 0) return;
 
@@ -370,6 +386,8 @@ export default class BossZone extends Phaser.Scene {
   }
 
   hitBoss() {
+
+
     if (this.bossInvincible || !boss) return;
 
     this.bossHp--;
@@ -415,11 +433,22 @@ export default class BossZone extends Phaser.Scene {
       this.cameras.main.height / 2,
       "victory"
     ).setScrollFactor(0).setDepth(10);
-
+    // Musique de victoire
+    this.sound.stopByKey("musique_boss");
+    this.sound.add("Victory_theme", { loop: true, volume: 0.4 }).play();
     boss = null;
 
-    this.time.delayedCall(3000, () => {
-      this.scene.start("Menu"); // ou ta scène suivante
+    this.time.delayedCall(6000, () => {
+      this.add.image(
+        this.cameras.main.width / 2,
+        this.cameras.main.height / 2,
+        "credits"
+      ).setScrollFactor(0).setDepth(11).setOrigin(0.5)
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+
+      this.time.delayedCall(6000, () => {
+        this.scene.start("Menu");
+      });
     });
   }
 }

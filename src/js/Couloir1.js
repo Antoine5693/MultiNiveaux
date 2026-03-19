@@ -65,9 +65,17 @@ export default class Couloir1 extends Phaser.Scene {
     this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
     this.load.audio("son_screamer", "src/assets/elf-fang-screamer.mp3");
     this.load.image("img_screamer", "src/assets/tetescreemer.png");
+
+    this.load.audio("musique_ambiance", "src/assets/musique_ambiance.mp3");
   }
 
   create() {
+    // Musique ambiance
+    if (!this.sound.get("musique_ambiance")) {
+      this.sound.add("musique_ambiance", { loop: true, volume: 1 }).play();
+    }
+
+
     this.sound.stopByKey("attaque_blob");
     this.sound.stopByKey("son_zombie_attaque");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -342,24 +350,24 @@ export default class Couloir1 extends Phaser.Scene {
 
     // Direction pour tirer
     if (clavier.left.isDown) {
-  lastDir.x = -1;
-  lastDir.y = 0;
-  }
+      lastDir.x = -1;
+      lastDir.y = 0;
+    }
 
-  else if (clavier.right.isDown) {
-  lastDir.x = 1;
-  lastDir.y = 0;
-  }
+    else if (clavier.right.isDown) {
+      lastDir.x = 1;
+      lastDir.y = 0;
+    }
 
-  else if (clavier.up.isDown) {
-  lastDir.x = 0;
-  lastDir.y = -1;
-  }
+    else if (clavier.up.isDown) {
+      lastDir.x = 0;
+      lastDir.y = -1;
+    }
 
-  else if (clavier.down.isDown) {
-  lastDir.x = 0;
-  lastDir.y = 1;
-  }
+    else if (clavier.down.isDown) {
+      lastDir.x = 0;
+      lastDir.y = 1;
+    }
     // Tir
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
       let bullet = bullets.create(player.x, player.y, "img_balle");

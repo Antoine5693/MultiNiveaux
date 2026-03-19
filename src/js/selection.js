@@ -131,7 +131,7 @@ export default class selection extends Phaser.Scene {
     });
     this.load.audio("son_zombie_attaque", "src/assets/zombie_attack_sound.mp3");
     this.load.audio("zombie_mort", "src/assets/zombie_dying_sound.mp3");
-    this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
+    this.load.spritesheet("img_porte1", "src/assets/porte1finie - Copie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
