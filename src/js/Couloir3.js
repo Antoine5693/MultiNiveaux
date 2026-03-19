@@ -68,8 +68,10 @@ export default class Couloir3 extends Phaser.Scene {
     // Rodeur
     this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png", { frameWidth: 151, frameHeight: 178 });
     this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png", { frameWidth: 160, frameHeight: 162 });
-    this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
+this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
   }
+    
+  
 
   create() {
 
@@ -349,7 +351,7 @@ export default class Couloir3 extends Phaser.Scene {
         // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
         open_portec3_5 = true;
         porte5.anims.play("anim_ouvreporte5");
-        this.time.delayedCall(500, () => { this.scene.start("selection"); });
+        this.time.delayedCall(500, () => { this.scene.start("BossZone"); });
       }
       this.time.delayedCall(500, () => {
         this.scene.start("BossZone");
