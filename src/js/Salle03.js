@@ -269,9 +269,9 @@ export default class Salle03 extends Phaser.Scene {
 
   spawnEnemies() {
     const zombiePositions = [
-      { x: 400, y: 200 },
-      { x: 600, y: 150 },
-      { x: 200, y: 300 }
+      { x: 400, y: 300 },
+      { x: 600, y: 250 },
+      { x: 200, y: 400 }
     ];
 
     this.zombies = [];
