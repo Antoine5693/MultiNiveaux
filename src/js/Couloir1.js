@@ -142,7 +142,7 @@ export default class Couloir1 extends Phaser.Scene {
     // Escalier1 — hitbox physique + zone de détection
     escalier1 = this.physics.add.staticSprite(3392, 2425, "img_escalier1", 0);
     escalier1.setSize(escalier1.width, escalier1.height - 150); // hitbox physique réduite
-    this.zone_escalier1 = this.add.zone( escalier1.x, escalier1.y, escalier1.width, escalier1.height); // zone de détection
+    this.zone_escalier1 = this.add.zone(escalier1.x, escalier1.y, escalier1.width, escalier1.height); // zone de détection
     this.physics.add.existing(this.zone_escalier1, true);
 
     // Escalier2 — hitbox physique + zone de détection

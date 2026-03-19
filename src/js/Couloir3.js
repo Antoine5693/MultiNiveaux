@@ -72,6 +72,8 @@ export default class Couloir3 extends Phaser.Scene {
     this.load.audio("son_screamer", "src/assets/elf-fang-screamer.mp3");
     this.load.image("img_screamer", "src/assets/tetescreemer.png");
   }
+    
+  
 
   create() {
 
@@ -373,7 +375,7 @@ export default class Couloir3 extends Phaser.Scene {
         // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
         open_portec3_5 = true;
         porte5.anims.play("anim_ouvreporte5");
-        this.time.delayedCall(500, () => { this.scene.start("selection"); });
+        this.time.delayedCall(500, () => { this.scene.start("BossZone"); });
       }
       this.time.delayedCall(500, () => {
         this.scene.start("BossZone");
