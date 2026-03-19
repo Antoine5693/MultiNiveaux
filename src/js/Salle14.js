@@ -12,6 +12,7 @@ var CibleA, CibleB, CibleC;
 var cibleATouchee = false;
 var cibleBTouchee = false;
 var cibleCTouchee = false;
+var rep = false;
 
 export default class Salle14 extends Phaser.Scene {
   constructor() {
@@ -98,6 +99,7 @@ this.physics.add.overlap(bullets, CibleA, (bullet, cible) => {
     bullet.destroy();
     cible.destroy();
     cibleATouchee = true;
+    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
 });
 
 //  Balles sur cible B
@@ -105,6 +107,7 @@ this.physics.add.overlap(bullets, CibleB, (bullet, cible) => {
     bullet.destroy();
     cible.destroy();
     cibleBTouchee = true;
+    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
 });
 
 //  Balles sur cible C
@@ -112,6 +115,7 @@ this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
     bullet.destroy();
     cible.destroy();
     cibleCTouchee = true;
+    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
 });
 
     // Joueur Jason
