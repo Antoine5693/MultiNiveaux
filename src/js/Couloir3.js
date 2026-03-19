@@ -60,7 +60,7 @@ export default class Couloir3 extends Phaser.Scene {
     this.load.spritesheet("img_porteC3_2", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
     this.load.spritesheet("img_porteC3_3", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
     this.load.spritesheet("img_porteC3_4", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
-    /*this.load.spritesheet("img_porteC3_5", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });*/
+    this.load.spritesheet("img_porteC3_5", "src/assets/spritesheet_porte2coul.png", { frameWidth: 150, frameHeight: 127 });
 
     // Escalier
     this.load.image("img_escalier1", "src/assets/escalier.png", { frameWidth: 50, frameHeight: 200 });

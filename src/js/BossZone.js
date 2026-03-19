@@ -6,7 +6,8 @@ var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 };
 var hasgun = true;
 var boss;
-var hp, hpMax;
+var hp
+var hpMax;
 var hearts = [];
 var isInvincible = false;
 
