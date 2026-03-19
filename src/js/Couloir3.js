@@ -6,26 +6,35 @@ var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 };
 var enter;
 var interact;
+// variable pour l'escalier' vers couloir1
 var escalier1;
+// variables pour la porte c3_1
 var porte1;
 var open_portec3_1 = false;
+// variables pour la porte c3_2
 var porte2;
 var open_portec3_2 = false;
+// variables pour la porte c3_3
 var porte3;
 var open_portec3_3 = false;
+// variables pour la porte c3_4   
 var porte4;
 var open_portec3_4 = false;
+// variables pour la porte c3_5
 var porte5;
 var open_portec3_5 = false;
+// escaliers1
+var escalier1;
 
 export default class Couloir3 extends Phaser.Scene {
+  // constructeur de la classe
   constructor() {
     super({
-      key: "Couloir3"
+      key: "Couloir3" //  ici on précise le nom de la classe en tant qu'identifiant
     });
   }
-
   preload() {
+    // assets pour le tilemap
     this.load.image("B", "src/assets/Background.png");
     this.load.image("B2", "src/assets/Background2.png");
     this.load.image("D1", "src/assets/Dela_dec1.png");
@@ -65,6 +74,9 @@ export default class Couloir3 extends Phaser.Scene {
   create() {
 
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+
+    // clavier pour les déplacements du personnage
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -83,12 +95,11 @@ export default class Couloir3 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-    // Spawn du joueur
     const spawn = this.scene.settings.data || {};
     const startX = spawn.x ?? 1530;
     const startY = spawn.y ?? 2325;
 
-    // Création des portes
+    //création des portes de transition vers les salles
     porte1 = this.physics.add.staticSprite(1011, 512, "img_porteC3_1", 0);
     open_portec3_1 = false;
     this.anims.create({
@@ -97,7 +108,6 @@ export default class Couloir3 extends Phaser.Scene {
       frameRate: 20,
       repeat: 0
     });
-
     porte2 = this.physics.add.staticSprite(2065, 512, "img_porteC3_2", 0);
     open_portec3_2 = false;
     this.anims.create({
@@ -106,7 +116,6 @@ export default class Couloir3 extends Phaser.Scene {
       frameRate: 20,
       repeat: 0
     });
-
     porte3 = this.physics.add.staticSprite(1201, 1632, "img_porteC3_3", 0);
     open_portec3_3 = false;
     this.anims.create({
@@ -115,7 +124,6 @@ export default class Couloir3 extends Phaser.Scene {
       frameRate: 20,
       repeat: 0
     });
-
     porte4 = this.physics.add.staticSprite(1873, 1632, "img_porteC3_4", 0);
     open_portec3_4 = false;
     this.anims.create({
@@ -124,15 +132,14 @@ export default class Couloir3 extends Phaser.Scene {
       frameRate: 20,
       repeat: 0
     });
-
-    /*porte5 = this.physics.add.staticSprite(128, 608, "img_porteC3_5", 0);
+    porte5 = this.physics.add.staticSprite(1535, 512, "img_porteC3_5", 0);
     open_portec3_5 = false;
     this.anims.create({
       key: "anim_ouvreporte5",
       frames: this.anims.generateFrameNumbers("img_porteC3_5", { start: 0, end: 7 }),
       frameRate: 20,
       repeat: 0
-    });*/
+    });
 
     escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
     const e1w = escalier1.width;
@@ -148,8 +155,12 @@ export default class Couloir3 extends Phaser.Scene {
     player.setSize(160, 250);
     player.setOffset(40, 20);
     player.setCollideWorldBounds(true);
+    this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
+    this.clavier = this.input.keyboard.createCursorKeys();
+    this.physics.add.collider(player, this.groupe_plateformes);
 
-    // Caméra
+    // Caméra centrée sur le joueur
     this.cameras.main.startFollow(player);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -308,9 +319,13 @@ export default class Couloir3 extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(interact) == true) {
 
       if (open_portec3_1 == false && this.physics.overlap(player, porte1) == true) {
+        // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
         open_portec3_1 = true;
         porte1.anims.play("anim_ouvreporte1");
         this.time.delayedCall(500, () => { this.scene.start("Salle11"); });
+        this.time.delayedCall(500, () => {
+          this.scene.start("Salle11");
+        });
       }
 
       if (open_portec3_2 == false && this.physics.overlap(player, porte2) == true) {
@@ -330,17 +345,22 @@ export default class Couloir3 extends Phaser.Scene {
         porte4.anims.play("anim_ouvreporte4");
         this.time.delayedCall(500, () => { this.scene.start("Salle14"); });
       }
-
-      /*if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
+      if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
+        // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
         open_portec3_5 = true;
         porte5.anims.play("anim_ouvreporte5");
         this.time.delayedCall(500, () => { this.scene.start("selection"); });
-      }*/
-
-      if (this.physics.overlap(player, this.zone_escalier1) == true) {
-        this.scene.start("Couloir1", { x: 1279, y: 2110 });
       }
+      this.time.delayedCall(500, () => {
+        this.scene.start("BossZone");
+      });
+      porte5.anims.play("anim_ouvreporte5");
     }
+
+    if (this.physics.overlap(player, this.zone_escalier1) == true) {
+      this.scene.start("Couloir1", { x: 1279, y: 2110 });
+    }
+
 
     // IA du rodeur
     if (this.rodeur && player) {
