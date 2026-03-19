@@ -233,12 +233,10 @@ export default class Salle14 extends Phaser.Scene {
     }
 
     // Direction pour tirer
-    lastDir.x = 0;
-    lastDir.y = 0;
-    if (clavier.left.isDown) lastDir.x = -1;
-    if (clavier.right.isDown) lastDir.x = 1;
-    if (clavier.up.isDown) lastDir.y = -1;
-    if (clavier.down.isDown) lastDir.y = 1;
+    if (clavier.left.isDown) { lastDir.x = -1; lastDir.y = 0; }
+    else if (clavier.right.isDown) { lastDir.x = 1; lastDir.y = 0; }
+    if (clavier.up.isDown) { lastDir.y = -1; lastDir.x = 0; }
+    else if (clavier.down.isDown) { lastDir.y = 1; lastDir.x = 0; }
 
     // Tir
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
