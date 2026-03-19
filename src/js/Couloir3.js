@@ -70,13 +70,15 @@ export default class Couloir3 extends Phaser.Scene {
     this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png", { frameWidth: 160, frameHeight: 162 });
     this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
     this.load.audio("son_screamer", "src/assets/elf-fang-screamer.mp3");
-    this.load.image("img_screamer", "src/assets/tetescreemer.png",{frameWidth:494, frameHeight: 547});
+    this.load.image("img_screamer", "src/assets/tetescreemer.png", { frameWidth: 494, frameHeight: 547 });
   }
-    
-  
+
+
 
   create() {
 
+    this.sound.stopByKey("attaque_blob");
+    this.sound.stopByKey("son_zombie_attaque");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
 
@@ -225,6 +227,13 @@ export default class Couloir3 extends Phaser.Scene {
     this.rodeur.anims.play("rodeurDroite", true);
     this.physics.add.collider(this.rodeur, calque1);
     this.physics.add.collider(this.rodeur, calque2);
+
+    this.physics.add.collider(this.rodeur, porte1);
+    this.physics.add.collider(this.rodeur, porte2);
+    this.physics.add.collider(this.rodeur, porte3);
+    this.physics.add.collider(this.rodeur, porte4);
+    this.physics.add.collider(this.rodeur, porte5);
+
     this.overlapRodeur = this.physics.add.overlap(player, this.rodeur, () => {
 
       this.physics.world.removeCollider(this.overlapRodeur);
@@ -272,9 +281,9 @@ export default class Couloir3 extends Phaser.Scene {
     porte4.setOffset(0, 0);
     this.physics.add.collider(player, porte4);
 
-    /*porte5.setSize(103, 64);
+    porte5.setSize(150, 64);  // ← 150 car frameWidth de img_porteC3_5 est 150
     porte5.setOffset(0, 0);
-    this.physics.add.collider(player, porte5);*/
+    this.physics.add.collider(player, porte5);
 
     // ---- COLLIDER ESCALIER ----
     this.physics.add.collider(player, escalier1);
@@ -324,24 +333,24 @@ export default class Couloir3 extends Phaser.Scene {
 
     // Direction pour tirer
     if (clavier.left.isDown) {
-  lastDir.x = -1;
-  lastDir.y = 0;
-  }
+      lastDir.x = -1;
+      lastDir.y = 0;
+    }
 
-  else if (clavier.right.isDown) {
-  lastDir.x = 1;
-  lastDir.y = 0;
-  }
+    else if (clavier.right.isDown) {
+      lastDir.x = 1;
+      lastDir.y = 0;
+    }
 
-  else if (clavier.up.isDown) {
-  lastDir.x = 0;
-  lastDir.y = -1;
-  }
+    else if (clavier.up.isDown) {
+      lastDir.x = 0;
+      lastDir.y = -1;
+    }
 
-  else if (clavier.down.isDown) {
-  lastDir.x = 0;
-  lastDir.y = 1;
-  }
+    else if (clavier.down.isDown) {
+      lastDir.x = 0;
+      lastDir.y = 1;
+    }
 
     // Tir
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
@@ -381,19 +390,40 @@ export default class Couloir3 extends Phaser.Scene {
         porte4.anims.play("anim_ouvreporte4");
         this.time.delayedCall(500, () => { this.scene.start("Salle14"); });
       }
+
+      
       if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
-        // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
-        open_portec3_5 = true;
-        porte5.anims.play("anim_ouvreporte5");
-        this.time.delayedCall(500, () => { this.scene.start("BossZone"); });
+        this.artifact = this.registry.get('artifacts') || 0;
+
+        if (this.artifact >= 3) {
+          open_portec3_5 = true;
+          porte5.anims.play("anim_ouvreporte5");
+          this.time.delayedCall(500, () => { this.scene.start("BossZone"); });
+        } else {
+          if (!this.texteArtifact) {
+            this.texteArtifact = this.add.text(
+              this.cameras.main.width / 2,
+              this.cameras.main.height / 2,
+              `Il vous faut 3 artifacts pour passer.\nPlus que ${3 - this.artifact}/3`,
+              { fontSize: "20px", fill: "#ffffff", stroke: "#000000", strokeThickness: 4, align: "center" }
+            ).setScrollFactor(0).setOrigin(0.5).setDepth(10);
+
+            this.time.delayedCall(2000, () => {
+              if (this.texteArtifact) {
+                this.texteArtifact.destroy();
+                this.texteArtifact = null;
+              }
+            });
+          }
+        }
       }
-    
 
-    if (this.physics.overlap(player, this.zone_escalier1) == true) {
 
-      this.scene.start("Couloir1", { x: 1279, y: 2110 });
+      if (this.physics.overlap(player, this.zone_escalier1) == true) {
+
+        this.scene.start("Couloir1", { x: 1279, y: 2110 });
+      }
     }
-  }
 
     // IA du rodeur
     if (this.rodeur && player) {

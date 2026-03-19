@@ -68,7 +68,8 @@ export default class Couloir1 extends Phaser.Scene {
   }
 
   create() {
-
+    this.sound.stopByKey("attaque_blob");
+    this.sound.stopByKey("son_zombie_attaque");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -89,6 +90,12 @@ export default class Couloir1 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
+    calque2.getTileAt(109, 41)?.setCollision(false);
+    calque2.getTileAt(110, 41)?.setCollision(false);
+    calque2.getTileAt(111, 41)?.setCollision(false);
+    calque2.getTileAt(88, 62)?.setCollision(false);
+    calque2.getTileAt(89, 62)?.setCollision(false);
+    calque2.getTileAt(90, 62)?.setCollision(false);
 
     // Création des portes
     porte1 = this.physics.add.staticSprite(2285, 60, "img_porteC1_1", 0);
@@ -220,6 +227,14 @@ export default class Couloir1 extends Phaser.Scene {
     this.physics.add.collider(this.rodeur, calque1);
     this.physics.add.collider(this.rodeur, calque2);
     this.physics.add.collider(this.rodeur, calque3);
+
+    this.physics.add.collider(this.rodeur, porte1);
+    this.physics.add.collider(this.rodeur, porte2);
+    this.physics.add.collider(this.rodeur, porte3);
+    this.physics.add.collider(this.rodeur, porte4);
+    this.physics.add.collider(this.rodeur, porte5);
+    this.physics.add.collider(this.rodeur, porte6);
+
     this.overlapRodeur = this.physics.add.overlap(player, this.rodeur, () => {
 
       this.physics.world.removeCollider(this.overlapRodeur);

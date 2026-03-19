@@ -13,6 +13,7 @@ var cibleATouchee = false;
 var cibleBTouchee = false;
 var cibleCTouchee = false;
 var rep = false;
+var chest_opened = false;
 
 export default class Salle14 extends Phaser.Scene {
   constructor() {
@@ -48,6 +49,13 @@ export default class Salle14 extends Phaser.Scene {
 
   create() {
 
+     this.anims.create({
+      key: "anim_chest",
+      frames: this.anims.generateFrameNumbers("img_chest_anim", { start: 0, end: 10 }),
+      frameRate: 10,
+      repeat: 0
+    });
+
     this.sound.stopByKey("son_rodeur");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     clavier = this.input.keyboard.createCursorKeys();
@@ -78,45 +86,48 @@ export default class Salle14 extends Phaser.Scene {
       repeat: 0
     });
 
-    
-// Cible A
-CibleA = this.physics.add.staticSprite(150, 425, "Cible").setScale(0.15);
-CibleA.setSize(CibleA.width * 0.15, CibleA.height * 0.15);
-CibleA.refreshBody();
 
-// Cible B
-CibleB = this.physics.add.staticSprite(335, 425, "Cible").setScale(0.15);
-CibleB.setSize(CibleB.width * 0.15, CibleB.height * 0.15);
-CibleB.refreshBody();
+    // Cible A
+    CibleA = this.physics.add.staticSprite(150, 425, "Cible").setScale(0.15);
+    CibleA.setSize(CibleA.width * 0.15, CibleA.height * 0.15);
+    CibleA.refreshBody();
 
-// Cible C
-CibleC = this.physics.add.staticSprite(520, 425, "Cible").setScale(0.15);
-CibleC.setSize(CibleC.width * 0.15, CibleC.height * 0.15);
-CibleC.refreshBody();
+    // Cible B
+    CibleB = this.physics.add.staticSprite(335, 425, "Cible").setScale(0.15);
+    CibleB.setSize(CibleB.width * 0.15, CibleB.height * 0.15);
+    CibleB.refreshBody();
 
-//  Balles sur cible A
-this.physics.add.overlap(bullets, CibleA, (bullet, cible) => {
-    bullet.destroy();
-    cible.destroy();
-    cibleATouchee = true;
-    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
-});
+    // Cible C
+    CibleC = this.physics.add.staticSprite(520, 425, "Cible").setScale(0.15);
+    CibleC.setSize(CibleC.width * 0.15, CibleC.height * 0.15);
+    CibleC.refreshBody();
 
-//  Balles sur cible B
-this.physics.add.overlap(bullets, CibleB, (bullet, cible) => {
-    bullet.destroy();
-    cible.destroy();
-    cibleBTouchee = true;
-    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
-});
+    //  Balles sur cible A
+    this.physics.add.overlap(bullets, CibleA, (bullet, cible) => {
+      bullet.destroy();
+      cible.destroy();
+      cibleATouchee = true;
+      rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
+      if (rep) this.spawnChest();
+    });
 
-//  Balles sur cible C
-this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
-    bullet.destroy();
-    cible.destroy();
-    cibleCTouchee = true;
-    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
-});
+    //  Balles sur cible B
+    this.physics.add.overlap(bullets, CibleB, (bullet, cible) => {
+      bullet.destroy();
+      cible.destroy();
+      cibleBTouchee = true;
+      rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
+      if (rep) this.spawnChest();
+    });
+
+    //  Balles sur cible C
+    this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
+      bullet.destroy();
+      cible.destroy();
+      cibleCTouchee = true;
+      rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
+      if (rep) this.spawnChest();
+    });
 
     // Joueur Jason
     player = this.physics.add.sprite(335, 150, "IdleJason");
@@ -166,6 +177,8 @@ this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
 
     this.physics.add.collider(bullets, calque1, (bullet) => { bullet.destroy(); });
     this.physics.add.collider(bullets, calque3, (bullet) => { bullet.destroy(); });
+
+     this.artifact = this.registry.get('artifacts') || 0;
   }
 
   update() {
@@ -220,12 +233,10 @@ this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
     }
 
     // Direction pour tirer
-    lastDir.x = 0;
-    lastDir.y = 0;
-    if (clavier.left.isDown) lastDir.x = -1;
-    if (clavier.right.isDown) lastDir.x = 1;
-    if (clavier.up.isDown) lastDir.y = -1;
-    if (clavier.down.isDown) lastDir.y = 1;
+    if (clavier.left.isDown) { lastDir.x = -1; lastDir.y = 0; }
+    else if (clavier.right.isDown) { lastDir.x = 1; lastDir.y = 0; }
+    if (clavier.up.isDown) { lastDir.y = -1; lastDir.x = 0; }
+    else if (clavier.down.isDown) { lastDir.y = 1; lastDir.x = 0; }
 
     // Tir
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
@@ -237,5 +248,38 @@ this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
       lastFired = this.time.now + 300;
     }
     wasSpaceDown = this.keySpace.isDown;
+  }
+
+
+  spawnChest() {
+    this.chest = this.physics.add.sprite(
+      this.cameras.main.width / 4,
+      this.cameras.main.height - 75,
+      "img_chest_anim", 0
+    );
+    const w = this.chest.displayWidth;
+    const h = this.chest.displayHeight;
+    this.chest.setSize(w / 2, h / 2);
+    this.chest.setOffset(w / 4, h / 2);
+    this.chest.setImmovable(true);
+    this.physics.add.collider(this.chest, player);
+
+    this.chestZone = this.add.zone(this.chest.x, this.chest.y, w * 2, h * 2);
+    this.physics.add.existing(this.chestZone, true);
+
+    this.physics.add.overlap(player, this.chestZone, () => {
+      if (Phaser.Input.Keyboard.JustDown(interact) && !chest_opened) {
+        this.chest.anims.play("anim_chest", true);
+
+        chest_opened = true;
+        this.artifact += 1;
+        this.registry.set('artifacts', this.artifact);
+
+        this.add.text(this.chest.x, this.chest.y - 50,
+          `ARTEFACT OBTENU ! Plus que ${3 - this.artifact}/3`, {
+          fontSize: '16px', fill: '#fff'
+        }).setOrigin(0.5);
+      }
+    });
   }
 }

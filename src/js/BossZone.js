@@ -50,7 +50,7 @@ export default class BossZone extends Phaser.Scene {
     console.log("Texture moveG existe ?", this.textures.exists("boss_moveG"));
     console.log("Texture moveD existe ?", this.textures.exists("boss_moveD"));
     this.H = 180;
-    this.attackDistance = 120;
+    this.attackDistance = 80;
     this.patternTimer = 0;
 
 
@@ -119,29 +119,47 @@ export default class BossZone extends Phaser.Scene {
     this.sonGrowl = this.sound.add("growl");
 
     // Animations boss
-    this.anims.create({ key: "boss_jump1",  frames: this.anims.generateFrameNumbers("boss_jump1",  { start: 0, end: 3 }), frameRate: 24, repeat: 0 });
-    this.anims.create({ key: "boss_jump2",  frames: this.anims.generateFrameNumbers("boss_jump2",  { start: 0, end: 3 }), frameRate: 24, repeat: 0 });
-    this.anims.create({ key: "boss_jump3",  frames: this.anims.generateFrameNumbers("boss_jump3",  { start: 0, end: 3 }), frameRate: 24, repeat: 0 });
-    this.anims.create({ key: "boss_attack", frames: this.anims.generateFrameNumbers("boss_attack", { start: 0, end: 4 }), frameRate: 5,  repeat: 0 });
-    this.anims.create({ key: "boss_moveG",  frames: this.anims.generateFrameNumbers("boss_moveG",  { start: 0, end: 6 }), frameRate: 8,  repeat: -1 });
-    this.anims.create({ key: "boss_moveD",  frames: this.anims.generateFrameNumbers("boss_moveD",  { start: 0, end: 5 }), frameRate: 8,  repeat: -1 });
+    this.anims.create({ key: "boss_jump1", frames: this.anims.generateFrameNumbers("boss_jump1", { start: 0, end: 3 }), frameRate: 24, repeat: 0 });
+    this.anims.create({ key: "boss_jump2", frames: this.anims.generateFrameNumbers("boss_jump2", { start: 0, end: 3 }), frameRate: 24, repeat: 0 });
+    this.anims.create({ key: "boss_jump3", frames: this.anims.generateFrameNumbers("boss_jump3", { start: 0, end: 3 }), frameRate: 24, repeat: 0 });
+    this.anims.create({ key: "boss_attack", frames: this.anims.generateFrameNumbers("boss_attack", { start: 0, end: 4 }), frameRate: 5, repeat: 0 });
+    this.anims.create({ key: "boss_moveG", frames: this.anims.generateFrameNumbers("boss_moveG", { start: 0, end: 6 }), frameRate: 8, repeat: -1 });
+    this.anims.create({ key: "boss_moveD", frames: this.anims.generateFrameNumbers("boss_moveD", { start: 0, end: 5 }), frameRate: 8, repeat: -1 });
 
     // Hitbox invisible
     boss = this.physics.add.sprite(600, 200, "boss_jump1");
     boss.setVisible(false);
     boss.setBounce(0.2);
     boss.setCollideWorldBounds(true);
+    boss.setSize(boss.width / 4, boss.height / 4);
+    boss.setOffset(boss.width / 4 + 20, boss.height / 50 + 10)
+
     this.physics.add.collider(boss, calque1);
     this.physics.add.collider(boss, calque2);
 
+    // Zone de détection 1.5x plus grande que la hitbox
+    // ✅ Zone dynamique qui peut bouger
+    this.bossZone = this.add.zone(boss.x, boss.y,
+      (boss.width / 2) * 2,
+      (boss.height / 2) * 1.5
+    );
+    this.physics.add.existing(this.bossZone, false); // ✅ false = dynamique
+
+    // Overlap zone -> dégâts au joueur
+    this.physics.add.overlap(player, this.bossZone, () => {
+      this.takeDamage();
+    }, null, this);
+
+
+
     // Sprites visuels séparés
     this.bossSprites = {
-      jump1:  this.add.sprite(0, 0, "boss_jump1"),
-      jump2:  this.add.sprite(0, 0, "boss_jump2"),
-      jump3:  this.add.sprite(0, 0, "boss_jump3"),
+      jump1: this.add.sprite(0, 0, "boss_jump1"),
+      jump2: this.add.sprite(0, 0, "boss_jump2"),
+      jump3: this.add.sprite(0, 0, "boss_jump3"),
       attack: this.add.sprite(0, 0, "boss_attack"),
-      moveG:  this.add.sprite(0, 0, "boss_moveG"),
-      moveD:  this.add.sprite(0, 0, "boss_moveD"),
+      moveG: this.add.sprite(0, 0, "boss_moveG"),
+      moveD: this.add.sprite(0, 0, "boss_moveD"),
     };
 
     const hauteurs = { jump1: 225, jump2: 201, jump3: 140, attack: 159, moveG: 285, moveD: 257 };
@@ -153,6 +171,42 @@ export default class BossZone extends Phaser.Scene {
     this.bossSprites.moveD.setOrigin(0.5, 0.8);
 
     this.bossCurrentAnim = "moveG";
+
+    // HP
+    this.bossHp = 30;
+    this.bossMaxHp = 30;
+    this.bossInvincible = false;
+
+    // Barre de vie du boss (UI)
+    this.bossBarBg = this.add.rectangle(
+      this.cameras.main.width / 2, 40, 300, 18, 0x333333
+    ).setScrollFactor(0).setOrigin(0.5, 0.5);
+
+    this.bossBarFill = this.add.rectangle(
+      this.cameras.main.width / 2 - 150, 40, 300, 18, 0xff3333
+    ).setScrollFactor(0).setOrigin(0, 0.5);
+
+    this.bossLabel = this.add.text(
+      this.cameras.main.width / 2, 20, "BOSS", {
+      fontSize: "14px", fill: "#ffffff"
+    }
+    ).setScrollFactor(0).setOrigin(0.5, 0.5);
+
+    this.physics.add.overlap(bullets, this.bossZone, (objA, objB) => {
+      let bullet = objA.texture ? objA : objB;
+
+      if (!bullet.active) return;
+
+      bullet.disableBody(true, true);  // ← même solution que ton dummy
+      this.hitBoss();
+    }, null, this);
+
+
+
+
+
+
+
   }
 
   playBossAnim(key) {
@@ -212,10 +266,10 @@ export default class BossZone extends Phaser.Scene {
 
     // Direction pour tirer
     let dirX = 0, dirY = 0;
-    if (clavier.left.isDown)  dirX -= 1;
+    if (clavier.left.isDown) dirX -= 1;
     if (clavier.right.isDown) dirX += 1;
-    if (clavier.up.isDown)    dirY -= 1;
-    if (clavier.down.isDown)  dirY += 1;
+    if (clavier.up.isDown) dirY -= 1;
+    if (clavier.down.isDown) dirY += 1;
     if (dirX !== 0 || dirY !== 0) {
       let mag = Math.sqrt(dirX * dirX + dirY * dirY);
       lastDir.x = dirX / mag;
@@ -234,7 +288,12 @@ export default class BossZone extends Phaser.Scene {
     wasSpaceDown = this.keySpace.isDown;
 
     // IA Boss
-    if (boss) {
+    if (boss && boss.body && boss.body.enable) {
+      this.bossZone.x = boss.x;
+      this.bossZone.y = boss.y - 55;
+      this.bossZone.body.reset(boss.x, boss.y - 55); // met à jour la physique
+
+      Object.values(this.bossSprites).forEach(s => { s.x = boss.x; s.y = boss.y; });
       Object.values(this.bossSprites).forEach(s => { s.x = boss.x; s.y = boss.y; });
 
       let dx = player.x - boss.x;
@@ -264,5 +323,103 @@ export default class BossZone extends Phaser.Scene {
         }
       }
     }
+  }
+
+  takeDamage() {
+    if (this.isInvincible) return;
+
+    let hp = this.registry.get('hp');
+    if (hp <= 0) return;
+
+    hp -= 2;
+    this.registry.set('hp', hp);
+
+    // Met à jour les deux coeurs visuellement
+    if (this.hearts[hp + 1]) this.hearts[hp + 1].setTexture("empty_heart");
+    if (this.hearts[hp]) this.hearts[hp].setTexture("empty_heart");
+
+    this.isInvincible = true;
+
+    this.tweens.add({
+      targets: player,
+      alpha: 0,
+      duration: 100,
+      yoyo: true,
+      repeat: 9,
+      onComplete: () => { player.setAlpha(1); }
+    });
+
+    this.time.delayedCall(2000, () => {
+      this.isInvincible = false;
+    });
+
+    if (hp <= 0) {
+      player.setVelocity(0);
+      player.body.enable = false;
+
+      this.add.image(
+        this.cameras.main.width / 2,
+        this.cameras.main.height / 2,
+        "game_over"
+      ).setScrollFactor(0).setDepth(10).setScale(2);
+
+      this.time.delayedCall(3000, () => {
+        this.scene.start("Menu");
+      });
+    }
+  }
+
+  hitBoss() {
+    if (this.bossInvincible || !boss) return;
+
+    this.bossHp--;
+
+    const ratio = this.bossHp / this.bossMaxHp;
+    this.bossBarFill.setDisplaySize(300 * ratio, 18);
+
+    this.bossInvincible = true;
+    this.time.delayedCall(150, () => {
+      this.bossInvincible = false;
+    });
+
+    Object.values(this.bossSprites).forEach(s => {
+      this.tweens.add({
+        targets: s,
+        alpha: 0,
+        duration: 75,
+        yoyo: true
+      });
+    });
+
+    if (this.bossHp <= 0) {
+      this.bossDie();
+    }
+  }
+
+
+  bossDie() {
+    boss.body.enable = false;
+    boss.setVelocity(0);
+
+    // Cache tous les sprites
+    Object.values(this.bossSprites).forEach(s => s.setVisible(false));
+
+    // Cache la barre de vie
+    this.bossBarBg.setVisible(false);
+    this.bossBarFill.setVisible(false);
+    this.bossLabel.setVisible(false);
+
+    // image de victoire
+    this.add.image(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      "victory"
+    ).setScrollFactor(0).setDepth(10);
+
+    boss = null;
+
+    this.time.delayedCall(3000, () => {
+      this.scene.start("Menu"); // ou ta scène suivante
+    });
   }
 }
