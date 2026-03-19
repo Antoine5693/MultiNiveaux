@@ -675,7 +675,7 @@ export default class selection extends Phaser.Scene {
     this.npc1.setOffset(0, 0);
 
     // dialogue
-    this.textefille1 = this.add.text(this.npc1.x, this.npc1.y - 100, "Bonjour !", {
+    this.textefille1 = this.add.text(this.npc1.x, this.npc1.y - 100, "Ne t'inquète pas si parfois ton corps ne répond pas comme tu le souhaites et commence à diverger, c'est lieux sont obscurs.", {
       font: "16px Arial",
       fill: "#ffffff",
       backgroundColor: "#000000",
@@ -700,7 +700,7 @@ export default class selection extends Phaser.Scene {
 
 
 
-    this.textehomme1 = this.add.text(this.npc2.x, this.npc2.y - 100, "SIX SEVENNNN !", {
+    this.textehomme1 = this.add.text(this.npc2.x, this.npc2.y - 100, "Le labo jlab07 a été contaminé par un mystèrieux virus, tu dois enquêter sur les lieux.", {
       font: "16px Arial",
       fill: "#ffffff",
       backgroundColor: "#000000",
@@ -720,7 +720,7 @@ export default class selection extends Phaser.Scene {
     });
 
 
-    this.textefille2 = this.add.text(this.npc3.x, this.npc3.y - 100, "Voici ton gun grrr pow", {
+    this.textefille2 = this.add.text(this.npc3.x, this.npc3.y - 100, "Voici ton gun grrr pow, entraîne-toi, et vas voir le militaire !", {
       font: "16px Arial",
       fill: "#ffffff",
       backgroundColor: "#000000",
