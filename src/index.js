@@ -33,7 +33,7 @@ var config = {
       gravity: {
         y: 0 // gravité verticale : acceleration ddes corps en pixels par seconde
       },
-      debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
+      debug: false // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
   scene: [Menu,selection,niveau1,Salle01,Couloir1,Couloir2,Couloir3,BossZone,Salle02,Salle03,Salle04,Salle05,Salle06,Salle07,Salle08,Salle09,Salle10,Salle11,Salle12,Salle13,Salle14]  // liste des scenes du jeu : ici une seule scene : selection
