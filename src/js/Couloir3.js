@@ -69,6 +69,8 @@ export default class Couloir3 extends Phaser.Scene {
     this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png", { frameWidth: 151, frameHeight: 178 });
     this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png", { frameWidth: 160, frameHeight: 162 });
     this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
+    this.load.audio("son_screamer", "src/assets/elf-fang-screamer.mp3");
+    this.load.image("img_screamer", "src/assets/tetescreemer.png");
   }
 
   create() {
@@ -216,12 +218,34 @@ export default class Couloir3 extends Phaser.Scene {
     this.rodeur.setScale(0.6);
     this.rodeur.body.setSize(60, 90);
     this.rodeur.body.setOffset(50, 70);
-    this.sonRodeur = this.sound.add("son_rodeur", { loop: true, volume: 1.8 });
+    this.sonRodeur = this.sound.add("son_rodeur", { loop: true, volume: 0.4 });
     this.sonRodeur.play();
     this.rodeur.anims.play("rodeurDroite", true);
     this.physics.add.collider(this.rodeur, calque1);
     this.physics.add.collider(this.rodeur, calque2);
+    this.physics.add.overlap(player, this.rodeur, () => {
+    
+    // Stoppe le joueur et le rodeur
+    player.setVelocity(0);
+    this.rodeur.setVelocity(0);
 
+    // Affiche l'image du screamer sur toute la caméra
+    let screamer = this.add.image(this.cameras.main.scrollX + this.cameras.main.width / 2,
+                                  this.cameras.main.scrollY + this.cameras.main.height / 2,
+                                  "img_screamer");
+    screamer.setOrigin(0.5, 0.5);
+    screamer.setDepth(100); // au-dessus de tout
+    screamer.setScale(1.5); // optionnel : agrandir si nécessaire
+    screamer.setScrollFactor(0); // reste fixe à l'écran
+
+    // Joue le son du screamer
+    this.sound.play("son_screamer", { volume: 1 });
+
+    // Après 1.5 secondes, retourne au menu
+    this.time.delayedCall(1500, () => {
+        this.scene.start("Menu");
+     });
+   });
     // ---- COLLIDERS CALQUES ----
     this.physics.add.collider(player, calque1);
     this.physics.add.collider(player, calque2);
@@ -355,12 +379,12 @@ export default class Couloir3 extends Phaser.Scene {
         this.scene.start("BossZone");
       });
       porte5.anims.play("anim_ouvreporte5");
-    }
+    
 
     if (this.physics.overlap(player, this.zone_escalier1) == true) {
       this.scene.start("Couloir1", { x: 1279, y: 2110 });
     }
-
+  }
 
     // IA du rodeur
     if (this.rodeur && player) {
