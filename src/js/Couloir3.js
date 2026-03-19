@@ -225,6 +225,13 @@ export default class Couloir3 extends Phaser.Scene {
     this.rodeur.anims.play("rodeurDroite", true);
     this.physics.add.collider(this.rodeur, calque1);
     this.physics.add.collider(this.rodeur, calque2);
+
+    this.physics.add.collider(this.rodeur, porte1);
+    this.physics.add.collider(this.rodeur, porte2);
+    this.physics.add.collider(this.rodeur, porte3);
+    this.physics.add.collider(this.rodeur, porte4);
+    this.physics.add.collider(this.rodeur, porte5);
+
     this.overlapRodeur = this.physics.add.overlap(player, this.rodeur, () => {
 
       this.physics.world.removeCollider(this.overlapRodeur);

@@ -158,7 +158,6 @@ export default class Salle01 extends Phaser.Scene {
     });
 
     this.spawnEnemies();
-
     let hp = this.registry.get('hp');
     let hpMax = this.registry.get('hpMax');
     if (!hpMax) {
@@ -285,6 +284,7 @@ export default class Salle01 extends Phaser.Scene {
       z.setVelocityX(80);
       z.anims.play("zombie_deplacement", true);
       z.hp = 5;
+      z.setScale(2);
       this.zombies.push(z);
     });
 
