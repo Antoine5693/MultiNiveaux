@@ -12,6 +12,8 @@ var bouton1Active = false;
 var bouton2Active = false;
 var bouton3Active = false;
 var rep = false;
+var chest_opened = false;
+var interact;
 
 // variables pour la porte de transition vers couloir1
 var porte;
@@ -52,7 +54,17 @@ export default class Salle13 extends Phaser.Scene {
   }
 
   create() {
+    
+    chest_opened = false;
+    this.artifact = this.registry.get('artifacts') || 0;
 
+
+    this.anims.create({
+      key: "anim_chest",
+      frames: this.anims.generateFrameNumbers("img_chest_anim", { start: 0, end: 10 }),
+      frameRate: 10,
+      repeat: 0
+    });
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -171,6 +183,7 @@ export default class Salle13 extends Phaser.Scene {
       lumière1.setTexture(bouton1Active ? "Lamps1" : "Lamps2");
       lumière1.refreshBody();
       rep = (!bouton1Active && !bouton2Active && bouton3Active);
+      if (rep) this.spawnChest();
     }
 
     // Bouton 2 — allume/éteint
@@ -179,6 +192,7 @@ export default class Salle13 extends Phaser.Scene {
       lumière2.setTexture(bouton2Active ? "Lamps1" : "Lamps2");
       lumière2.refreshBody();
       rep = (!bouton1Active && !bouton2Active && bouton3Active);
+      if (rep) this.spawnChest(); // ✅
     }
 
     // Bouton 3 — allume/éteint
@@ -187,6 +201,7 @@ export default class Salle13 extends Phaser.Scene {
       lumière3.setTexture(bouton3Active ? "Lamps1" : "Lamps2");
       lumière3.refreshBody();
       rep = (!bouton1Active && !bouton2Active && bouton3Active);
+      if (rep) this.spawnChest(); // ✅
     }
 
     // Interaction porte
@@ -255,5 +270,42 @@ export default class Salle13 extends Phaser.Scene {
       lastFired = this.time.now + 300;
     }
     wasSpaceDown = this.keySpace.isDown;
+
+
+  }
+
+
+
+
+  spawnChest() {
+    this.chest = this.physics.add.sprite(
+      this.cameras.main.width / 4,
+      this.cameras.main.height - 75,
+      "img_chest_anim", 0
+    );
+    const w = this.chest.displayWidth;
+    const h = this.chest.displayHeight;
+    this.chest.setSize(w / 2, h / 2);
+    this.chest.setOffset(w / 4, h / 2);
+    this.chest.setImmovable(true);
+    this.physics.add.collider(this.chest, player);
+
+    this.chestZone = this.add.zone(this.chest.x, this.chest.y, w * 2, h * 2);
+    this.physics.add.existing(this.chestZone, true);
+
+    this.physics.add.overlap(player, this.chestZone, () => {
+      if (Phaser.Input.Keyboard.JustDown(interact) && !chest_opened) {
+        this.chest.anims.play("anim_chest", true);
+
+        chest_opened = true;
+        this.artifact += 1;
+        this.registry.set('artifacts', this.artifact);
+
+        this.add.text(this.chest.x, this.chest.y - 50,
+          `ARTEFACT OBTENU ! Plus que ${3 - this.artifact}/3`, {
+          fontSize: '16px', fill: '#fff'
+        }).setOrigin(0.5);
+      }
+    });
   }
 }
