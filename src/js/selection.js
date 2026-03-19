@@ -828,12 +828,19 @@ export default class selection extends Phaser.Scene {
     }
 
     // Mise à jour de la dernière direction pour tirer
-    lastDir.x = 0;
+    if (clavier.left.isDown) {
+    lastDir.x = -1;
     lastDir.y = 0;
-    if (clavier.left.isDown) lastDir.x = -1;
-    if (clavier.right.isDown) lastDir.x = 1;
-    if (clavier.up.isDown) lastDir.y = -1;
-    if (clavier.down.isDown) lastDir.y = 1;
+  } else if (clavier.right.isDown) {
+    lastDir.x = 1;
+    lastDir.y = 0;
+  } else if (clavier.up.isDown) {
+    lastDir.x = 0;
+    lastDir.y = -1;
+  } else if (clavier.down.isDown) {
+    lastDir.x = 0;
+    lastDir.y = 1;
+  }
 
     // Tir du joueur
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired && hasgun) {
