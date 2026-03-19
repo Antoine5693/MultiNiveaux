@@ -135,14 +135,14 @@ export default class selection extends Phaser.Scene {
       frameHeight: 128
     });
 
-    this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png",{
-        frameWidth: 151,
-        frameHeight: 178
+    this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png", {
+      frameWidth: 151,
+      frameHeight: 178
     });
 
-    this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png",{
-        frameWidth: 160,
-        frameHeight: 162
+    this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png", {
+      frameWidth: 160,
+      frameHeight: 162
     });
     this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
 
@@ -153,7 +153,20 @@ export default class selection extends Phaser.Scene {
     this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
     this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
 
-    this.load.image("empty_heart", "src/assets/empty_heart.png"); 
+    this.load.image("empty_heart", "src/assets/empty_heart.png");
+
+
+    this.load.image("IdleJason", "src/assets/Jason/IdleJason.png");
+    this.load.image("jason_tirebas", "src/assets/Jason/jason_tirebas.png");
+    this.load.image("jason_tirehaut", "src/assets/Jason/jason_tirehaut.png");
+    this.load.image("jason_tiregauche", "src/assets/Jason/jason_tiregauche.png");
+    this.load.image("jason_tiredroite", "src/assets/Jason/jason_tiredroite.png");
+
+    this.load.spritesheet("jason_marcheavant", "src/assets/Jason/jason_marcheavant.png", { frameWidth: 1126 / 6, frameHeight: 320 });
+    this.load.spritesheet("jason_back", "src/assets/Jason/jason_back.png", { frameWidth: 984/6, frameHeight: 254});
+    this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
+
+
   }
 
 
@@ -266,18 +279,18 @@ export default class selection extends Phaser.Scene {
     });
 
     this.anims.create({
-  key: "rodeurDroite",
-  frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
-  frameRate: 5,
-  repeat: -1
- });
+      key: "rodeurDroite",
+      frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: -1
+    });
 
- this.anims.create({
-  key: "rodeurGauche",
-  frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
-  frameRate: 5,
-  repeat: -1
- });
+    this.anims.create({
+      key: "rodeurGauche",
+      frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: -1
+    });
 
     this.anims.create({
       key: "anim_Dummy",
@@ -440,23 +453,23 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(this.zombie, calque3);
     this.physics.add.collider(this.zombie, calque4);
 
- 
- this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
 
-this.rodeur.setScale(0.6);
-this.rodeur.setCollideWorldBounds(true);
-this.rodeur.setBounce(1);
-this.sonRodeur = this.sound.add("son_rodeur", {
-  loop: true,
-  volume: 1.8
-});
-this.sonRodeur.play();
-this.rodeur.setVelocityX(100);
-this.rodeur.anims.play("rodeurDroite", true);
-this.physics.add.collider(this.rodeur, calque1);
-this.physics.add.collider(this.rodeur, calque2);
-this.physics.add.collider(this.rodeur, calque3);
-this.physics.add.collider(this.rodeur, calque4);
+    this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
+
+    this.rodeur.setScale(0.6);
+    this.rodeur.setCollideWorldBounds(true);
+    this.rodeur.setBounce(1);
+    this.sonRodeur = this.sound.add("son_rodeur", {
+      loop: true,
+      volume: 1.8
+    });
+    this.sonRodeur.play();
+    this.rodeur.setVelocityX(100);
+    this.rodeur.anims.play("rodeurDroite", true);
+    this.physics.add.collider(this.rodeur, calque1);
+    this.physics.add.collider(this.rodeur, calque2);
+    this.physics.add.collider(this.rodeur, calque3);
+    this.physics.add.collider(this.rodeur, calque4);
 
 
 
@@ -487,8 +500,9 @@ this.physics.add.collider(this.rodeur, calque4);
      *  CREATION DU PERSONNAGE  *
      ****************************/
 
-    player = this.physics.add.sprite(100, 450, "img_perso");
-    player.setBounce(0.2); // on donne un petit coefficient de rebond
+    player = this.physics.add.sprite(100, 450, "IdleJason");
+    player.setScale(0);
+  player.setSize(200,250); // ajuste la taille de la hitbox du joueur
     player.setCollideWorldBounds(true); // le player se cognera contre les bords du monde
 
     // Caméra centrée sur le joueur
@@ -496,27 +510,32 @@ this.physics.add.collider(this.rodeur, calque4);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.anims.create({
-      key: "anim_tourne_gauche", // key est le nom de l'animation : doit etre unique poru la scene.
-      frames: this.anims.generateFrameNumbers("img_perso", { start: 0, end: 3 }), // on prend toutes les frames de img perso numerotées de 0 à 3
-      frameRate: 10, // vitesse de défilement des frames
-      repeat: -1 // nombre de répétitions de l'animation. -1 = infini
-    });
 
-    // creation de l'animation "anim_tourne_face" qui sera jouée sur le player lorsque ce dernier n'avance pas.
-    this.anims.create({
-      key: "anim_face",
-      frames: [{ key: "img_perso", frame: 4 }],
-      frameRate: 20
-    });
 
     // creation de l'animation "anim_tourne_droite" qui sera jouée sur le player lorsque ce dernier tourne à droite
     this.anims.create({
       key: "anim_tourne_droite",
-      frames: this.anims.generateFrameNumbers("img_perso", { start: 5, end: 8 }),
+      frames: this.anims.generateFrameNumbers("jason_marchedroite", { start: 0, end: 5 }),
       frameRate: 10,
       repeat: -1
     });
+
+    this.anims.create({
+      key: "anim_marche_arriere",
+      frames: this.anims.generateFrameNumbers("jason_back", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "anim_marche_avant",
+      frames: this.anims.generateFrameNumbers("jason_marcheavant", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+
+
 
     // animation du coffre
     this.anims.create({
@@ -739,7 +758,7 @@ this.physics.add.collider(this.rodeur, calque4);
       }
     });
 
-      // Initialisation de la vie du joueur à 3 et affichage des coeurs
+    // Initialisation de la vie du joueur à 3 et affichage des coeurs
     this.registry.set('hp', 3);
     this.registry.set('hpMax', 3);
     this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
@@ -754,22 +773,45 @@ this.physics.add.collider(this.rodeur, calque4);
     // horizontal
     if (clavier.left.isDown) {
       player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(true);  // ✅ miroir de l'animation droite
+      player.anims.play("anim_tourne_droite", true);
+       player.setScale(0.6);
     } else if (clavier.right.isDown) {
       player.setVelocityX(160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(false); // ✅ animation normale
       player.anims.play("anim_tourne_droite", true);
+      player.setScale(0.6);
     }
 
     // vertical
     if (clavier.up.isDown) {
       player.setVelocityY(-160);
+      player.setScale(0.55);
+      player.setSize(100, 150);
+      player.setOffset(player.width / 2 - 50, player.height / 2 - 75); // ajuste l'offset pour que la hitbox soit centrée
+      player.anims.play("anim_marche_arriere", true);
+      player.setScale(0.55);
     } else if (clavier.down.isDown) {
       player.setVelocityY(160);
+      player.setScale(0.45);
+      player.setSize(130, 200);
+      player.setOffset(player.width / 2 - 65, player.height / 2 - 75); // ajuste l'offset pour que la hitbox soit centrée
+      player.anims.play("anim_marche_avant", true);
+      player.setScale(0.45);
     }
 
     // idling
     if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
+      player.setScale(0.4);
+      player.setSize(160, 250);
+      player.setOffset(player.width / 2 - 75, player.height / 2 - 130); // ajuste l'offset pour que la hitbox soit centrée
+      player.setTexture("IdleJason");
+      player.setScale(0.4);
+      
     }
 
     // Update lastDir based on pressed keys
@@ -797,33 +839,33 @@ this.physics.add.collider(this.rodeur, calque4);
     wasSpaceDown = this.keySpace.isDown;
 
     let distanceX = player.x - this.rodeur.x;
-let distanceY = player.y - this.rodeur.y;
+    let distanceY = player.y - this.rodeur.y;
 
-let vitesse = 60;
+    let vitesse = 60;
 
-// mouvement horizontal
-if (distanceX > 5) {
-    this.rodeur.setVelocityX(vitesse);
-    this.rodeur.anims.play("rodeurDroite", true);
-}
-else if (distanceX < -5) {
-    this.rodeur.setVelocityX(-vitesse);
-    this.rodeur.anims.play("rodeurGauche", true);
-}
-else {
-    this.rodeur.setVelocityX(0);
-}
+    // mouvement horizontal
+    if (distanceX > 5) {
+      this.rodeur.setVelocityX(vitesse);
+      this.rodeur.anims.play("rodeurDroite", true);
+    }
+    else if (distanceX < -5) {
+      this.rodeur.setVelocityX(-vitesse);
+      this.rodeur.anims.play("rodeurGauche", true);
+    }
+    else {
+      this.rodeur.setVelocityX(0);
+    }
 
-// mouvement vertical
-if (distanceY > 5) {
-    this.rodeur.setVelocityY(vitesse);
-}
-else if (distanceY < -5) {
-    this.rodeur.setVelocityY(-vitesse);
-}
-else {
-    this.rodeur.setVelocityY(0);
-}
+    // mouvement vertical
+    if (distanceY > 5) {
+      this.rodeur.setVelocityY(vitesse);
+    }
+    else if (distanceY < -5) {
+      this.rodeur.setVelocityY(-vitesse);
+    }
+    else {
+      this.rodeur.setVelocityY(0);
+    }
 
     if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
       this.scene.start("Salle01");
