@@ -1,5 +1,9 @@
 var player;
 var clavier;
+var bullets;
+var lastFired = 0;
+var wasSpaceDown = false;
+var lastDir = { x: 1, y: 0 };
 var enter;
 var interact;
 // variable pour l'escalier' vers couloir1
@@ -36,36 +40,35 @@ export default class Couloir3 extends Phaser.Scene {
     this.load.image("D1", "src/assets/Dela_dec1.png");
     this.load.image("D2", "src/assets/Dela_dec2.png");
     this.load.tilemapTiledJSON("carte3", "src/assets/Couloir3.tmj");
-    // asset pour le joueur
-    this.load.spritesheet("dude.png", "src/assets/dude.png", {
-      frameWidth: 32,
-      frameHeight: 48
-    });
-    // assets des portes
-    this.load.spritesheet("img_porteC3_1", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC3_2", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC3_3", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC3_4", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    /*this.load.spritesheet("img_porteC3_5", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });*/
-    this.load.image("img_escalier1", "src/assets/escalier.png", {
-      frameWidth: 50,
-      frameHeight: 200
-    });
+
+    // Sprites Jason
+    this.load.image("IdleJason", "src/assets/Jason/IdleJason.png");
+    this.load.spritesheet("jason_marcheavant", "src/assets/Jason/jason_marcheavant.png", { frameWidth: 1126 / 6, frameHeight: 320 });
+    this.load.spritesheet("jason_back", "src/assets/Jason/jason_back.png", { frameWidth: 984 / 6, frameHeight: 254 });
+    this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
+
+    // Balles et sons
+    this.load.image("img_balle", "src/assets/bullet.png");
+    this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
+
+    // Coeurs
+    this.load.image("img_heart", "src/assets/heart.png");
+    this.load.image("empty_heart", "src/assets/empty_heart.png");
+
+    // Portes
+    this.load.spritesheet("img_porteC3_1", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC3_2", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC3_3", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC3_4", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    /*this.load.spritesheet("img_porteC3_5", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });*/
+
+    // Escalier
+    this.load.image("img_escalier1", "src/assets/escalier.png", { frameWidth: 50, frameHeight: 200 });
+
+    // Rodeur
+    this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png", { frameWidth: 151, frameHeight: 178 });
+    this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png", { frameWidth: 160, frameHeight: 162 });
+    this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
   }
 
   create() {
@@ -78,7 +81,10 @@ export default class Couloir3 extends Phaser.Scene {
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-    // Création du tilemap et des plateformes à partir de Tiled
+    this.sonTir = this.sound.add("son_tir");
+    bullets = this.physics.add.group({ allowGravity: false });
+
+    // Tilemap
     const map = this.add.tilemap("carte3");
     const tileset1 = map.addTilesetImage("2", "B");
     const tileset2 = map.addTilesetImage("333", "B2");
@@ -89,11 +95,11 @@ export default class Couloir3 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-const spawn = this.scene.settings.data || {};
-const startX = spawn.x ?? 1530;
-const startY = spawn.y ?? 2325;
+    const spawn = this.scene.settings.data || {};
+    const startX = spawn.x ?? 1530;
+    const startY = spawn.y ?? 2325;
 
-//création des portes de transition vers les salles
+    //création des portes de transition vers les salles
     porte1 = this.physics.add.staticSprite(1011, 512, "img_porteC3_1", 0);
     open_portec3_1 = false;
     this.anims.create({
@@ -126,22 +132,28 @@ const startY = spawn.y ?? 2325;
       frameRate: 20,
       repeat: 0
     });
-    /*porte5 = this.physics.add.staticSprite(128, 608, "img_porteC3_5", 0);
+    porte5 = this.physics.add.staticSprite(1535, 512, "img_porteC3_5", 0);
     open_portec3_5 = false;
     this.anims.create({
       key: "anim_ouvreporte5",
       frames: this.anims.generateFrameNumbers("img_porteC3_5", { start: 0, end: 7 }),
       frameRate: 20,
       repeat: 0
-    });*/
+    });
 
-    //création de l'escalier1
     escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
+    const e1w = escalier1.width;
+    const e1h = escalier1.height;
+    escalier1.setSize(e1w, e1h - 150);
+    this.zone_escalier1 = this.add.zone(1536, 2420, e1w, e1h);
+    this.zone_escalier1.setOrigin(0.5, 0.5);
+    this.physics.add.existing(this.zone_escalier1, true);
 
 
-player = this.physics.add.sprite(startX, startY, "dude.png");
-    player.refreshBody();
-    player.setBounce(0.2);
+    player = this.physics.add.sprite(startX, startY, "IdleJason");
+    player.setScale(0.4);
+    player.setSize(160, 250);
+    player.setOffset(40, 20);
     player.setCollideWorldBounds(true);
     this.physics.add.collider(player, calque1);
     this.physics.add.collider(player, calque2);
@@ -153,107 +165,222 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // Animations du joueur
-    this.anims.create({
-      key: "anim_tourne_gauche",
-      frames: this.anims.generateFrameNumbers("dude.png", { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    });
-
-    this.anims.create({
-      key: "anim_face",
-      frames: [{ key: "dude.png", frame: 4 }],
-      frameRate: 20
-    });
-
+    // Animations Jason
     this.anims.create({
       key: "anim_tourne_droite",
-      frames: this.anims.generateFrameNumbers("dude.png", { start: 5, end: 8 }),
+      frames: this.anims.generateFrameNumbers("jason_marchedroite", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_arriere",
+      frames: this.anims.generateFrameNumbers("jason_back", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_avant",
+      frames: this.anims.generateFrameNumbers("jason_marcheavant", { start: 0, end: 5 }),
       frameRate: 10,
       repeat: -1
     });
 
+    // Animations rodeur
+    this.anims.create({
+      key: "rodeurDroite",
+      frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "rodeurGauche",
+      frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: -1
+    });
+
+    // Coeurs
+    let hp = this.registry.get('hp');
+    let hpMax = this.registry.get('hpMax');
+    if (!hpMax) { hpMax = 3; this.registry.set('hpMax', 3); }
+    if (!hp) { hp = 3; this.registry.set('hp', 3); }
+    this.hearts = [];
+    for (let i = 0; i < hpMax; i++) {
+      let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
+        .setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+      this.hearts.push(h);
+    }
+
+    // Rodeur
+    this.rodeur = this.physics.add.sprite(1500, 1300, "rodeurDroite");
+    this.rodeur.setScale(0.6);
+    this.rodeur.body.setSize(60, 90);
+    this.rodeur.body.setOffset(50, 70);
+    this.sonRodeur = this.sound.add("son_rodeur", { loop: true, volume: 1.8 });
+    this.sonRodeur.play();
+    this.rodeur.anims.play("rodeurDroite", true);
+    this.physics.add.collider(this.rodeur, calque1);
+    this.physics.add.collider(this.rodeur, calque2);
+
+    // ---- COLLIDERS CALQUES ----
+    this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
+
+    this.physics.add.collider(bullets, calque1, (bullet) => { bullet.destroy(); });
+    this.physics.add.collider(bullets, calque2, (bullet) => { bullet.destroy(); });
+
+    // ---- HITBOX MOITIÉ SUPÉRIEURE + COLLIDERS PORTES ----
+    porte1.setSize(103, 64);
+    porte1.setOffset(0, 0);
+    this.physics.add.collider(player, porte1);
+
+    porte2.setSize(103, 64);
+    porte2.setOffset(0, 0);
+    this.physics.add.collider(player, porte2);
+
+    porte3.setSize(103, 64);
+    porte3.setOffset(0, 0);
+    this.physics.add.collider(player, porte3);
+
+    porte4.setSize(103, 64);
+    porte4.setOffset(0, 0);
+    this.physics.add.collider(player, porte4);
+
+    /*porte5.setSize(103, 64);
+    porte5.setOffset(0, 0);
+    this.physics.add.collider(player, porte5);*/
+
+    // ---- COLLIDER ESCALIER ----
+    this.physics.add.collider(player, escalier1);
   }
 
   update() {
 
-    //ouverture des portes/escaliers
-    if (Phaser.Input.Keyboard.JustDown(interact) == true) {
-      //ouverture de la porte 1
-      if (open_portec3_1 == false && this.physics.overlap(player, porte1) == true) {
-        // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
-        open_portec3_1 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle11");
-        });
-        porte1.anims.play("anim_ouvreporte1");
-      }
-      if (open_portec3_2 == false && this.physics.overlap(player, porte2) == true) {
-        // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
-        open_portec3_2 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle12");
-        });
+    player.setVelocity(0);
 
-        porte2.anims.play("anim_ouvreporte2");
-      }
-      if (open_portec3_3 == false && this.physics.overlap(player, porte3) == true) {
-        // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
-        open_portec3_3 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle13");
-        });
-        porte3.anims.play("anim_ouvreporte3");
-      }
-      if (open_portec3_4 == false && this.physics.overlap(player, porte4) == true) {
-        // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
-        open_portec3_4 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle14");
-        });
-        porte4.anims.play("anim_ouvreporte4");
-      }
-      /*if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
-        // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
-        open_portec3_5 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("selection");
-        });
-        porte5.anims.play("anim_ouvreporte5");
-      }*/
-
-      if (this.physics.overlap(player, escalier1) == true) {
-        this.scene.start("Couloir1", { x: 1279, y: 2110 });
-      }
-    }
-
-    // DEPLACEMENT DU PERSONNAGE
-
-    player.setVelocityX(0);
-    player.setVelocityY(0);
-
-    // horizontal
+    // Déplacement horizontal
     if (clavier.left.isDown) {
       player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(true);
+      player.anims.play("anim_tourne_droite", true);
     } else if (clavier.right.isDown) {
       player.setVelocityX(160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(false);
       player.anims.play("anim_tourne_droite", true);
     }
 
-    // vertical
+    // Déplacement vertical
     if (clavier.up.isDown) {
       player.setVelocityY(-160);
+      player.setScale(0.55);
+      player.setSize(100, 150);
+      player.setOffset(player.width / 2 - 50, player.height / 2 - 75);
+      player.anims.play("anim_marche_arriere", true);
     } else if (clavier.down.isDown) {
       player.setVelocityY(160);
+      player.setScale(0.45);
+      player.setSize(130, 200);
+      player.setOffset(player.width / 2 - 65, player.height / 2 - 75);
+      player.anims.play("anim_marche_avant", true);
     }
 
-    // idling
+    // Idle
     if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
+      player.setTexture("IdleJason");
+      player.setScale(0.4);
+      player.setSize(160, 250);
+      player.setOffset(40, 20);
+    }
+
+    // Direction pour tirer
+    lastDir.x = 0;
+    lastDir.y = 0;
+    if (clavier.left.isDown) lastDir.x = -1;
+    if (clavier.right.isDown) lastDir.x = 1;
+    if (clavier.up.isDown) lastDir.y = -1;
+    if (clavier.down.isDown) lastDir.y = 1;
+
+    // Tir
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+      let bullet = bullets.create(player.x, player.y, "img_balle");
+      bullet.setScale(0.25);
+      this.sonTir.play();
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
+      lastFired = this.time.now + 300;
+    }
+    wasSpaceDown = this.keySpace.isDown;
+
+    // Ouverture des portes / escaliers
+    if (Phaser.Input.Keyboard.JustDown(interact) == true) {
+
+      if (open_portec3_1 == false && this.physics.overlap(player, porte1) == true) {
+        // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+        open_portec3_1 = true;
+        porte1.anims.play("anim_ouvreporte1");
+        this.time.delayedCall(500, () => { this.scene.start("Salle11"); });
+        this.time.delayedCall(500, () => {
+          this.scene.start("Salle11");
+        });
+      }
+
+      if (open_portec3_2 == false && this.physics.overlap(player, porte2) == true) {
+        open_portec3_2 = true;
+        porte2.anims.play("anim_ouvreporte2");
+        this.time.delayedCall(500, () => { this.scene.start("Salle12"); });
+      }
+
+      if (open_portec3_3 == false && this.physics.overlap(player, porte3) == true) {
+        open_portec3_3 = true;
+        porte3.anims.play("anim_ouvreporte3");
+        this.time.delayedCall(500, () => { this.scene.start("Salle13"); });
+      }
+
+      if (open_portec3_4 == false && this.physics.overlap(player, porte4) == true) {
+        open_portec3_4 = true;
+        porte4.anims.play("anim_ouvreporte4");
+        this.time.delayedCall(500, () => { this.scene.start("Salle14"); });
+      }
+      if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
+        // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
+        open_portec3_5 = true;
+        porte5.anims.play("anim_ouvreporte5");
+        this.time.delayedCall(500, () => { this.scene.start("selection"); });
+      }
+      this.time.delayedCall(500, () => {
+        this.scene.start("BossZone");
+      });
+      porte5.anims.play("anim_ouvreporte5");
+    }
+
+    if (this.physics.overlap(player, this.zone_escalier1) == true) {
+      this.scene.start("Couloir1", { x: 1279, y: 2110 });
     }
 
 
+    // IA du rodeur
+    if (this.rodeur && player) {
+      let dx = player.x - this.rodeur.x;
+      let dy = player.y - this.rodeur.y;
+      let vitesse = 60;
+
+      this.rodeur.setVelocityX(0);
+      this.rodeur.setVelocityY(0);
+
+      if (dx > 5) {
+        this.rodeur.setVelocityX(vitesse);
+        this.rodeur.anims.play("rodeurDroite", true);
+      } else if (dx < -5) {
+        this.rodeur.setVelocityX(-vitesse);
+        this.rodeur.anims.play("rodeurGauche", true);
+      }
+
+      if (dy > 5) this.rodeur.setVelocityY(vitesse);
+      else if (dy < -5) this.rodeur.setVelocityY(-vitesse);
+    }
   }
 }

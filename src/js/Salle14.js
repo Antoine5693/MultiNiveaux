@@ -46,6 +46,9 @@ export default class Salle14 extends Phaser.Scene {
 
     //création de la porte
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
+     porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
+    porte.setOffset(0, 0);  
+    open_porte1 = false;
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -65,6 +68,7 @@ export default class Salle14 extends Phaser.Scene {
     this.physics.add.collider(player, calque3);
     this.clavier = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, this.groupe_plateformes);
+    this.physics.add.collider(player, porte); 
 
   }
 

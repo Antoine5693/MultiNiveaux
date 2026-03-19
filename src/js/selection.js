@@ -347,6 +347,7 @@ export default class selection extends Phaser.Scene {
     // this.boss.setOrigin(0, 0.5); // Origine 
     this.boss.setBounce(0.2);
     this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
+    this.boss.disableBody(true, true);
     console.log("Boss zombie avec animation jump1 créé sur la map !");
 
     //son attaque sautée du boss
@@ -355,7 +356,7 @@ export default class selection extends Phaser.Scene {
       if (anim.key === "boss_jump2") {
         this.sonAttaqueSautée.play();
       }
-
+    this.sonAttaqueSautée.setMute(true);
     });
 
     //son attaque épée du boss
@@ -408,7 +409,7 @@ export default class selection extends Phaser.Scene {
     this.slime.setVelocityX(80); // vitesse horizontale
     this.slime.anims.play("blob_move_anim", true).setOrigin(0.5, 0.5);
 
-
+    this.slime.disableBody(true, true);
 
     this.physics.add.collider(this.slime, calque1);
     this.physics.add.collider(this.slime, calque2);
@@ -456,7 +457,7 @@ export default class selection extends Phaser.Scene {
 
 
     this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
-
+    this.zombie.disableBody(true, true);
     this.rodeur.setScale(0.6);
     this.rodeur.setCollideWorldBounds(true);
     this.rodeur.setBounce(1);
@@ -464,9 +465,10 @@ export default class selection extends Phaser.Scene {
       loop: true,
       volume: 1.8
     });
-    this.sonRodeur.play();
+    //this.sonRodeur.play();
     this.rodeur.setVelocityX(100);
     this.rodeur.anims.play("rodeurDroite", true);
+    this.rodeur.disableBody(true, true);
     this.physics.add.collider(this.rodeur, calque1);
     this.physics.add.collider(this.rodeur, calque2);
     this.physics.add.collider(this.rodeur, calque3);
@@ -486,6 +488,8 @@ export default class selection extends Phaser.Scene {
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
+    porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
+    porte.setOffset(0, 0);  
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -572,6 +576,8 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(bullets, calque4, function (bullet, platform) {
       bullet.destroy();
     });
+
+     this.physics.add.collider(porte, player)  // Collision entre le joueur et la porte
 
     // Collision entre le joueur et le coffre
     this.physics.add.collider(this.chest, player, function (chest, player) {

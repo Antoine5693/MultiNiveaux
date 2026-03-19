@@ -65,6 +65,9 @@ export default class Salle09 extends Phaser.Scene {
     this.calque3.setCollisionByProperty({ estSolide: true });
 
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
+     porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
+    porte.setOffset(0, 0);  
+    open_porte1 = false;
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -169,6 +172,7 @@ export default class Salle09 extends Phaser.Scene {
     this.physics.add.overlap(player, this.enemies, () => {
       this.takeDamage();
     }, null, this);
+      this.physics.add.collider(porte, player);
   }
 
   update() {
@@ -261,9 +265,9 @@ export default class Salle09 extends Phaser.Scene {
 
   spawnEnemies() {
     const zombiePositions = [
-      { x: 400, y: 200 },
-      { x: 600, y: 150 },
-      { x: 200, y: 300 }
+      { x: 400, y: 300 },
+      { x: 600, y: 250 },
+      { x: 200, y: 400 }
     ];
 
     this.zombies = [];
