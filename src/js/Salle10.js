@@ -67,8 +67,8 @@ export default class Salle10 extends Phaser.Scene {
     this.calque3.setCollisionByProperty({ estSolide: true });
 
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
-     porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
-    porte.setOffset(0, 0);  
+    porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
+    porte.setOffset(0, 0);
     open_porte1 = false;
     open_porte1 = false;
     this.anims.create({
@@ -174,7 +174,7 @@ export default class Salle10 extends Phaser.Scene {
     this.physics.add.overlap(player, this.enemies, () => {
       this.takeDamage();
     }, null, this);
-      this.physics.add.collider(porte, player); 
+    this.physics.add.collider(porte, player);
   }
 
   update() {
@@ -182,7 +182,7 @@ export default class Salle10 extends Phaser.Scene {
       this.physics.overlap(player, porte) == true) {
       open_porte1 = true;
       this.time.delayedCall(500, () => {
-          this.scene.start("Couloir2", { x: 1586, y: 1568 });
+        this.scene.start("Couloir2", { x: 1586, y: 1568 });
       });
       porte.anims.play("anim_ouvreporte1");
     }
@@ -363,7 +363,21 @@ export default class Salle10 extends Phaser.Scene {
     });
 
     if (hp <= 0) {
-      this.scene.start("Menu");
+      // Freeze le joueur
+      player.setVelocity(0);
+      player.body.enable = false;
+
+      // Affiche l'image de game over au centre de l'écran
+      this.add.image(
+        this.cameras.main.width / 2,
+        this.cameras.main.height / 2,
+        "game_over"
+      ).setScrollFactor(0).setDepth(10).setScale(2);
+
+      // Attend 3 secondes puis renvoi au Menu
+      this.time.delayedCall(3000, () => {
+        this.scene.start("Menu");
+      });
     }
   }
 }

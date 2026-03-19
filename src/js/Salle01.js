@@ -67,7 +67,7 @@ export default class Salle01 extends Phaser.Scene {
 
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
     porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
-    porte.setOffset(0, 0);  
+    porte.setOffset(0, 0);
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -360,7 +360,7 @@ export default class Salle01 extends Phaser.Scene {
 
     this.isInvincible = true;
 
-    this.tweens.add({
+    this.tweens.add({  // clignotement
       targets: player,
       alpha: 0,
       duration: 100,
@@ -374,7 +374,21 @@ export default class Salle01 extends Phaser.Scene {
     });
 
     if (hp <= 0) {
-      this.scene.start("Menu");
+      // Freeze le joueur
+      player.setVelocity(0);
+      player.body.enable = false;
+
+      // Affiche l'image de game over au centre de l'écran
+      this.add.image(
+        this.cameras.main.width / 2,
+        this.cameras.main.height / 2,
+        "game_over"
+      ).setScrollFactor(0).setDepth(10).setScale(2);
+
+      // Attend 3 secondes puis renvoi au Menu
+      this.time.delayedCall(3000, () => {
+        this.scene.start("Menu");
+      });
     }
   }
 }

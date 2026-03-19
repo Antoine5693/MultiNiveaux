@@ -370,7 +370,21 @@ export default class Salle09 extends Phaser.Scene {
     });
 
     if (hp <= 0) {
-      this.scene.start("Menu");
+      // Freeze le joueur
+      player.setVelocity(0);
+      player.body.enable = false;
+
+      // Affiche l'image de game over au centre de l'écran
+      this.add.image(
+        this.cameras.main.width / 2,
+        this.cameras.main.height / 2,
+        "game_over"
+      ).setScrollFactor(0).setDepth(10).setScale(2);
+
+      // Attend 3 secondes puis renvoi au Menu
+      this.time.delayedCall(3000, () => {
+        this.scene.start("Menu");
+      });
     }
   }
 }
