@@ -66,7 +66,20 @@ export default class Couloir3 extends Phaser.Scene {
       frameWidth: 50,
       frameHeight: 200
     });
+    this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png", {
+  frameWidth: 151,
+  frameHeight: 178
+});
+
+this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png", {
+  frameWidth: 160,
+  frameHeight: 162
+});
+
+this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
   }
+    
+  
 
   create() {
 
@@ -173,7 +186,45 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
       frameRate: 10,
       repeat: -1
     });
+    this.anims.create({
+  key: "rodeurDroite",
+  frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+});
 
+this.anims.create({
+  key: "rodeurGauche",
+  frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+});
+
+// création du rodeur
+this.rodeur = this.physics.add.sprite(1500, 1300, "rodeurDroite");
+
+this.rodeur.setScale(0.6);
+
+// réduction de la hitbox
+this.rodeur.body.setSize(60, 90);
+
+// repositionnement de la hitbox dans le sprite
+this.rodeur.body.setOffset(50, 70);
+// son
+this.sonRodeur = this.sound.add("son_rodeur", {
+  loop: true,
+  volume: 1.8
+});
+
+this.sonRodeur.play();
+
+this.rodeur.anims.play("rodeurDroite", true);
+
+// collisions map
+this.physics.add.collider(this.rodeur, calque1);
+this.physics.add.collider(this.rodeur, calque2);
+
+  
   }
 
   update() {
@@ -254,6 +305,59 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
       player.anims.play("anim_face", true);
     }
 
+ // DEPLACEMENT DU PERSONNAGE
+
+    player.setVelocityX(0);
+    player.setVelocityY(0);
+
+    // horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
+    }
+
+    // vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+    }
+
+    // idling
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
+
+    // IA DU RODEUR
+if (this.rodeur && player) {
+
+  let dx = player.x - this.rodeur.x;
+  let dy = player.y - this.rodeur.y;
+  let vitesse = 60;
+
+  this.rodeur.setVelocityX(0);
+  this.rodeur.setVelocityY(0);
+
+  // Mouvement horizontal
+  if (dx > 5) {
+    this.rodeur.setVelocityX(vitesse);
+    this.rodeur.anims.play("rodeurDroite", true);
+  } 
+  else if (dx < -5) {
+    this.rodeur.setVelocityX(-vitesse);
+    this.rodeur.anims.play("rodeurGauche", true);
+  }
+
+  // Mouvement vertical
+  if (dy > 5) {
+    this.rodeur.setVelocityY(vitesse);
+  } 
+  else if (dy < -5) {
+    this.rodeur.setVelocityY(-vitesse);
+  }
 
   }
-}
+}}
