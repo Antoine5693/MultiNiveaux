@@ -6,6 +6,7 @@ var interact;
 // variables pour la porte de transition vers couloir1
 var porte1; // pour la porte de transition vers couloir1
 var open_porte1 = false;//gère l'état de la porte 1
+var boxes = [];
 
 
 export default class Salle02 extends Phaser.Scene {
@@ -20,6 +21,7 @@ export default class Salle02 extends Phaser.Scene {
     this.load.image("B", "src/assets/Background.png");
     this.load.image("D", "src/assets/Dela_dec2.png");
     this.load.tilemapTiledJSON("carte02", "src/assets/Salle01.tmj");
+    this.load.image("box", "src/assets/box.png");
 
     //asset pour la porte de transition vers couloir1
     this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
@@ -68,9 +70,83 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.clavier = this.input.keyboard.createCursorKeys();
     this.physics.add.collider(player, this.groupe_plateformes);
 
+    this.boxGroup = this.physics.add.group();
+
+const boxPositions = [
+    { x: 100, y: 300 },
+    { x: 160, y: 300 },
+    { x: 220, y: 300 },
+    { x: 280, y: 300 },
+    { x: 340, y: 300 }
+];
+boxPositions.forEach(pos => {
+    const b = this.physics.add.sprite(pos.x, pos.y, "box").setScale(0.20);
+
+    const scaledW = b.width * 0.50;
+    const scaledH = b.height * 0.50;
+    b.setSize(scaledW, scaledH);
+    b.setOffset(
+        (b.width - scaledW) / 2,
+        (b.height - scaledH) / 2
+    );
+
+    b.body.setCollideWorldBounds(true);
+    b.body.allowGravity = false;
+    b.body.setMass(10);
+    b.body.setDragX(800);
+    b.body.setDragY(800);
+
+    this.physics.add.collider(player, b);
+
+    // ✅ Colliders calques avec arrêt immédiat
+    this.physics.add.collider(b, calque1, () => {
+        b.setVelocityX(0);
+        b.setVelocityY(0);
+    });
+    this.physics.add.collider(b, calque3, () => {
+        b.setVelocityX(0);
+        b.setVelocityY(0);
+    });
+
+    // ✅ Colliders entre boxes avec arrêt si bloquée
+    boxes.forEach(existingBox => {
+        this.physics.add.collider(b, existingBox, () => {
+            if (b.body.blocked.left || b.body.blocked.right ||
+                b.body.blocked.up   || b.body.blocked.down) {
+                b.setVelocityX(0);
+                b.setVelocityY(0);
+            }
+            if (existingBox.body.blocked.left || existingBox.body.blocked.right ||
+                existingBox.body.blocked.up   || existingBox.body.blocked.down) {
+                existingBox.setVelocityX(0);
+                existingBox.setVelocityY(0);
+            }
+        });
+    });
+
+    boxes.push(b);
+});
+    
+
+    
+
   }
 
   update() {
+
+    
+
+        boxes.forEach(b => {
+    // ✅ Si la box touche un mur, elle devient immovable
+    if (b.body.blocked.left || b.body.blocked.right ||
+        b.body.blocked.up   || b.body.blocked.down) {
+        b.body.immovable = true;
+        b.setVelocityX(0);
+        b.setVelocityY(0);
+    } else {
+        b.body.immovable = false;
+    }
+});
 
 
     // interaction avec la porte de transition vers couloir1
