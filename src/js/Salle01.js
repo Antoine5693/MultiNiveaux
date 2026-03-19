@@ -7,9 +7,8 @@ var lastDir = { x: 1, y: 0 };
 var chest_opened = false;
 var interact;
 
-// variables pour la porte de transition vers couloir1
-var porte; // pour la porte de transition vers couloir1
-var open_porte1 = false;//gère l'état de la porte 1
+var porte;
+var open_porte1 = false;
 
 export default class Salle01 extends Phaser.Scene {
   constructor() {
@@ -25,17 +24,29 @@ export default class Salle01 extends Phaser.Scene {
       frameWidth: 72,
       frameHeight: 62
     });
-        //asset pour la porte de transition vers couloir1
     this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
     });
+
+    this.load.image("IdleJason", "src/assets/Jason/IdleJason.png");
+    this.load.spritesheet("jason_marcheavant", "src/assets/Jason/jason_marcheavant.png", { frameWidth: 1126 / 6, frameHeight: 320 });
+    this.load.spritesheet("jason_back", "src/assets/Jason/jason_back.png", { frameWidth: 984 / 6, frameHeight: 254 });
+    this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
+
+    this.load.image("img_balle", "src/assets/bullet.png");
+    this.load.image("img_heart", "src/assets/heart.png");
+    this.load.image("empty_heart", "src/assets/empty_heart.png");
+    this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
+
+    this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", { frameWidth: 32, frameHeight: 30 });
+    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement.png", { frameWidth: 30, frameHeight: 30 });
+    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque.png", { frameWidth: 31, frameHeight: 32 });
+    this.load.spritesheet("blob_move", "src/assets/blob move.png", { frameWidth: 25, frameHeight: 51, spacing: 24 });
   }
 
   create() {
-
-interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
+    interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     chest_opened = false;
     this.isInvincible = false;
 
@@ -44,7 +55,6 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     const map = this.add.tilemap("carte2");
     const tileset1 = map.addTilesetImage("Background", "B");
@@ -54,26 +64,59 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.calque1.setCollisionByProperty({ estSolide: true });
     this.calque3.setCollisionByProperty({ estSolide: true });
 
-    //création de la porte
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porte1", {
-        start: 0, end: 7
-
-      }),
+      frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 7 }),
       frameRate: 20,
       repeat: 0
     });
 
-    player = this.physics.add.sprite(335, 150, "img_perso");
-    player.refreshBody();
-    player.setBounce(0.2);
+    // Joueur Jason
+    player = this.physics.add.sprite(335, 150, "IdleJason");
+    player.setScale(0.4);
+    player.setSize(160, 250);
+    player.setOffset(40, 20);
     player.setCollideWorldBounds(true);
-    this.physics.add.collider(player, this.calque1);
-    this.physics.add.collider(player, this.calque3);
-    this.clavier = this.input.keyboard.createCursorKeys();
+
+    this.anims.create({
+      key: "anim_tourne_droite",
+      frames: this.anims.generateFrameNumbers("jason_marchedroite", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_arriere",
+      frames: this.anims.generateFrameNumbers("jason_back", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_avant",
+      frames: this.anims.generateFrameNumbers("jason_marcheavant", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "zombie_deplacement",
+      frames: this.anims.generateFrameNumbers("zombie_deplacement", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "zombie_attaque",
+      frames: this.anims.generateFrameNumbers("zombie_attaque", { start: 0, end: 6 }),
+      frameRate: 8,
+      repeat: 0
+    });
+    this.anims.create({
+      key: "blob_move_anim",
+      frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+      frameRate: 6,
+      repeat: -1
+    });
 
     this.anims.create({
       key: "anim_chest",
@@ -81,6 +124,9 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
       frameRate: 10,
       repeat: 0
     });
+
+    this.physics.add.collider(player, this.calque1);
+    this.physics.add.collider(player, this.calque3);
 
     this.physics.add.collider(bullets, this.calque1, (bullet) => { bullet.destroy(); });
     this.physics.add.collider(bullets, this.calque3, (bullet) => { bullet.destroy(); });
@@ -108,24 +154,16 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     this.spawnEnemies();
 
-    // ============================================================
-    //  COEURS - on affiche hpMax coeurs, pleins ou vides selon hp
-    // ============================================================
     let hp = this.registry.get('hp');
     let hpMax = this.registry.get('hpMax');
-
-    // Si hpMax pas encore défini (première fois), on l'initialise à 3
     if (!hpMax) {
       hpMax = 3;
       this.registry.set('hpMax', 3);
     }
-
     this.hearts = [];
     for (let i = 0; i < hpMax; i++) {
       let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
-        .setScale(0.09)
-        .setOrigin(0, 0)
-        .setScrollFactor(0);
+        .setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
       this.hearts.push(h);
     }
 
@@ -135,39 +173,58 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
   }
 
   update() {
-
-    // interaction avec la porte de transition vers couloir1
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
       this.physics.overlap(player, porte) == true) {
-      // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
       this.time.delayedCall(500, () => {
-        // Envoie des coordonnées de respawn à la scène Couloir1
         this.scene.start("Couloir2", { x: 2258, y: 1120 });
       });
       porte.anims.play("anim_ouvreporte1");
     }
 
+    player.setVelocity(0);
 
-    player.setVelocityX(0);
-    player.setVelocityY(0);
 
+    // Horizontal
     if (clavier.left.isDown) {
       player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(true);
+      player.anims.play("anim_tourne_droite", true);
+      player.setScale(0.6);
     } else if (clavier.right.isDown) {
       player.setVelocityX(160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(false);
       player.anims.play("anim_tourne_droite", true);
+      player.setScale(0.6);
     }
 
+    // Vertical
     if (clavier.up.isDown) {
       player.setVelocityY(-160);
+      player.setScale(0.55);
+      player.setSize(100, 150);
+      player.setOffset(player.width / 2 - 50, player.height / 2 - 75);
+      player.anims.play("anim_marche_arriere", true);
+      player.setScale(0.55);
     } else if (clavier.down.isDown) {
       player.setVelocityY(160);
+      player.setScale(0.45);
+      player.setSize(130, 200);
+      player.setOffset(player.width / 2 - 65, player.height / 2 - 75);
+      player.anims.play("anim_marche_avant", true);
+      player.setScale(0.45);
     }
 
+    // Idle
     if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
+      player.setTexture("IdleJason");
+      player.setScale(0.4);
+      player.setSize(160, 250);
+      player.setOffset(40, 20);
     }
 
     if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
@@ -190,12 +247,7 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     this.zombies.forEach(zombie => {
       if (!zombie || !zombie.active) return;
-
-      let distance = Phaser.Math.Distance.Between(
-        zombie.x, zombie.y,
-        player.x, player.y
-      );
-
+      let distance = Phaser.Math.Distance.Between(zombie.x, zombie.y, player.x, player.y);
       if (distance < 50) {
         zombie.setVelocity(0);
         if (zombie.anims.currentAnim?.key !== "zombie_attaque") {
@@ -203,14 +255,8 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
           this.takeDamage();
         }
       } else {
-        let angle = Phaser.Math.Angle.Between(
-          zombie.x, zombie.y,
-          player.x, player.y
-        );
-        zombie.setVelocity(
-          Math.cos(angle) * 60,
-          Math.sin(angle) * 60
-        );
+        let angle = Phaser.Math.Angle.Between(zombie.x, zombie.y, player.x, player.y);
+        zombie.setVelocity(Math.cos(angle) * 60, Math.sin(angle) * 60);
         if (zombie.anims.currentAnim?.key !== "zombie_deplacement") {
           zombie.anims.play("zombie_deplacement", true);
         }
@@ -278,22 +324,14 @@ interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         chest_opened = true;
 
         let hpMax = this.registry.get('hpMax');
-
-        // ✅ Augmente le max de 1 peu importe la situation
         hpMax += 1;
         this.registry.set('hpMax', hpMax);
-
-        // ✅ Regen tous les PV au nouveau max
         this.registry.set('hp', hpMax);
 
-        // ✅ Remet tous les coeurs existants en plein
         this.hearts.forEach(h => h.setTexture("img_heart"));
 
-        // ✅ Ajoute le nouveau coeur supplémentaire
         let newHeart = this.add.image(16 + (hpMax - 1) * 35, 16, "img_heart")
-          .setScale(0.09)
-          .setOrigin(0, 0)
-          .setScrollFactor(0);
+          .setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
         this.hearts.push(newHeart);
       }
     });
