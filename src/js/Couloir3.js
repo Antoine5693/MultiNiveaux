@@ -78,6 +78,7 @@ export default class Couloir3 extends Phaser.Scene {
   create() {
 
     this.sound.stopByKey("attaque_blob");
+    this.sound.stopByKey("son_zombie_attaque");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
 
