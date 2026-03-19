@@ -8,6 +8,11 @@ var enter;
 var interact;
 var porte;
 var open_porte1 = false;
+var CibleA, CibleB, CibleC;
+var cibleATouchee = false;
+var cibleBTouchee = false;
+var cibleCTouchee = false;
+var rep = false;
 
 export default class Salle14 extends Phaser.Scene {
   constructor() {
@@ -17,6 +22,7 @@ export default class Salle14 extends Phaser.Scene {
   preload() {
     this.load.image("B", "src/assets/Background.png");
     this.load.image("D", "src/assets/Dela_dec2.png");
+    this.load.image("Cible", "src/assets/Cible1.png");
     this.load.tilemapTiledJSON("carte14", "src/assets/Salle01.tmj");
 
     // Sprites Jason
@@ -42,6 +48,7 @@ export default class Salle14 extends Phaser.Scene {
 
   create() {
 
+    this.sound.stopByKey("son_rodeur");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -70,6 +77,46 @@ export default class Salle14 extends Phaser.Scene {
       frameRate: 20,
       repeat: 0
     });
+
+    
+// Cible A
+CibleA = this.physics.add.staticSprite(150, 425, "Cible").setScale(0.15);
+CibleA.setSize(CibleA.width * 0.15, CibleA.height * 0.15);
+CibleA.refreshBody();
+
+// Cible B
+CibleB = this.physics.add.staticSprite(335, 425, "Cible").setScale(0.15);
+CibleB.setSize(CibleB.width * 0.15, CibleB.height * 0.15);
+CibleB.refreshBody();
+
+// Cible C
+CibleC = this.physics.add.staticSprite(520, 425, "Cible").setScale(0.15);
+CibleC.setSize(CibleC.width * 0.15, CibleC.height * 0.15);
+CibleC.refreshBody();
+
+//  Balles sur cible A
+this.physics.add.overlap(bullets, CibleA, (bullet, cible) => {
+    bullet.destroy();
+    cible.destroy();
+    cibleATouchee = true;
+    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
+});
+
+//  Balles sur cible B
+this.physics.add.overlap(bullets, CibleB, (bullet, cible) => {
+    bullet.destroy();
+    cible.destroy();
+    cibleBTouchee = true;
+    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
+});
+
+//  Balles sur cible C
+this.physics.add.overlap(bullets, CibleC, (bullet, cible) => {
+    bullet.destroy();
+    cible.destroy();
+    cibleCTouchee = true;
+    rep = (cibleATouchee && cibleBTouchee && cibleCTouchee); // 
+});
 
     // Joueur Jason
     player = this.physics.add.sprite(335, 150, "IdleJason");

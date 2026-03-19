@@ -48,6 +48,7 @@ export default class Salle02 extends Phaser.Scene {
 
   create() {
 
+    this.sound.stopByKey("son_rodeur");
     this.anims.create({
       key: "anim_chest",
       frames: this.anims.generateFrameNumbers("img_chest_anim", { start: 0, end: 10 }),

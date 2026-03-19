@@ -46,9 +46,7 @@ export default class BossZone extends Phaser.Scene {
   }
 
   create() {
-
-
-
+    this.sound.stopByKey("son_rodeur");
     console.log("Texture moveG existe ?", this.textures.exists("boss_moveG"));
     console.log("Texture moveD existe ?", this.textures.exists("boss_moveD"));
     this.H = 180;

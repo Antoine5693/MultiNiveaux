@@ -46,6 +46,8 @@ export default class Salle04 extends Phaser.Scene {
   }
 
   create() {
+
+    this.sound.stopByKey("son_rodeur");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     chest_opened = false;
     this.isInvincible = false;
@@ -278,6 +280,7 @@ export default class Salle04 extends Phaser.Scene {
 
     zombiePositions.forEach(pos => {
       let z = this.enemies.create(pos.x, pos.y, "zombie_deplacement");
+      z.setScale(2.9); 
       z.setCollideWorldBounds(true);
       z.setBounce(1);
       z.setVelocityX(80);
@@ -294,6 +297,7 @@ export default class Salle04 extends Phaser.Scene {
     blobPositions.forEach(pos => {
       let b = this.enemies.create(pos.x, pos.y, "blob_move");
       b.setCollideWorldBounds(true);
+      
       b.setBounce(1);
       b.setVelocityX(80);
       b.anims.play("blob_move_anim", true);

@@ -220,28 +220,37 @@ export default class Couloir1 extends Phaser.Scene {
     this.physics.add.collider(this.rodeur, calque1);
     this.physics.add.collider(this.rodeur, calque2);
     this.physics.add.collider(this.rodeur, calque3);
-    this.physics.add.overlap(player, this.rodeur, () => {
-    // Stoppe le joueur et le rodeur
-    player.setVelocity(0);
-    this.rodeur.setVelocity(0);
 
-    // Affiche l'image du screamer sur toute la caméra
-    let screamer = this.add.image(this.cameras.main.scrollX + this.cameras.main.width / 2,
-                                  this.cameras.main.scrollY + this.cameras.main.height / 2,
-                                  "img_screamer");
-    screamer.setOrigin(0.5, 0.5);
-    screamer.setDepth(100); // au-dessus de tout
-    screamer.setScale(1.5); // optionnel : agrandir si nécessaire
-    screamer.setScrollFactor(0); // reste fixe à l'écran
+    this.physics.add.collider(this.rodeur, porte1);
+    this.physics.add.collider(this.rodeur, porte2);
+    this.physics.add.collider(this.rodeur, porte3);
+    this.physics.add.collider(this.rodeur, porte4);
+    this.physics.add.collider(this.rodeur, porte5);
+    this.physics.add.collider(this.rodeur, porte6);
 
-    // Joue le son du screamer
-    this.sound.play("son_screamer", { volume: 1 });
+    this.overlapRodeur = this.physics.add.overlap(player, this.rodeur, () => {
 
-    // Après 1.5 secondes, retourne au menu
-    this.time.delayedCall(1500, () => {
+      this.physics.world.removeCollider(this.overlapRodeur);
+
+      player.setVelocity(0);
+      this.rodeur.setVelocity(0);
+
+      let screamer = this.add.image(
+        this.cameras.main.width / 2,
+        this.cameras.main.height / 2,
+        "img_screamer"
+      );
+      screamer.setOrigin(0.5, 0.5);
+      screamer.setDepth(100);
+      screamer.setScale(1.5);
+      screamer.setScrollFactor(0);
+
+      this.sound.play("son_screamer", { volume: 1 });
+
+      this.time.delayedCall(1500, () => {
         this.scene.start("Menu");
+      });
     });
-});
 
     // ---- COLLIDERS CALQUES ----
     this.physics.add.collider(player, calque1);
