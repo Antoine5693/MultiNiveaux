@@ -675,11 +675,12 @@ export default class selection extends Phaser.Scene {
     this.npc1.setOffset(0, 0);
 
     // dialogue
-    this.textefille1 = this.add.text(this.npc1.x, this.npc1.y - 100, "Ne t'inquète pas si parfois ton corps ne répond pas comme tu le souhaites et commence à diverger, c'est lieux sont obscurs.", {
+    this.textefille1 = this.add.text(this.npc1.x+100, this.npc1.y - 100, "Ne t'inquète pas si parfois ton corps ne répond pas comme tu le souhaites et commence à diverger, c'est lieux sont obscurs.", {
       font: "16px Arial",
       fill: "#ffffff",
       backgroundColor: "#000000",
-      padding: { x: 10, y: 5 }
+      padding: { x: 10, y: 5 },
+      wordWrap: { width: 200 }
     }
     ).setOrigin(0.5);
     this.textefille1.setVisible(false);
@@ -704,7 +705,8 @@ export default class selection extends Phaser.Scene {
       font: "16px Arial",
       fill: "#ffffff",
       backgroundColor: "#000000",
-      padding: { x: 10, y: 5 }
+      padding: { x: 10, y: 5 },
+       wordWrap: { width: 200 }
     }
     ).setOrigin(0.5);
     this.textehomme1.setVisible(false);
@@ -757,7 +759,7 @@ export default class selection extends Phaser.Scene {
         if (!hasgun) {
           this.textemilitaire.setText("Va parler à la fille pour avoir une arme !");
         } else {
-          this.textemilitaire.setText("Bonne chance pour la suite !");
+          this.textemilitaire.setText("Entre par la porte... et bonne chance pour la suite !");
         }
         this.hastalkedtomilitaire = true;
         this.textemilitaire.setVisible(true);
