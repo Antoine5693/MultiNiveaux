@@ -910,6 +910,6 @@ export default class selection extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(V)) this.scene.start("Couloir2");
     if (Phaser.Input.Keyboard.JustDown(O)) this.scene.start("Couloir3");
     if (Phaser.Input.Keyboard.JustDown(U)) this.scene.start("BossZone");
-    if (Phaser.Input.Keyboard.JustDown(E)) this.scene.start("Salle10");
+    if (Phaser.Input.Keyboard.JustDown(E)) this.scene.start("Salle11");
   }
 }

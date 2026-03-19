@@ -355,11 +355,12 @@ export default class Couloir3 extends Phaser.Scene {
         this.scene.start("BossZone");
       });
       porte5.anims.play("anim_ouvreporte5");
-    }
+    
 
     if (this.physics.overlap(player, this.zone_escalier1) == true) {
+
       this.scene.start("Couloir1", { x: 1279, y: 2110 });
-    }
+    }}
 
 
     // IA du rodeur
