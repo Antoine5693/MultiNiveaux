@@ -103,7 +103,7 @@ export default class BossZone extends Phaser.Scene {
       sprite.setScale(this.H / hauteurs[key]);
       sprite.setOrigin(0.5, 1);
     });
-    this.bossSprites.moveD.setOrigin(0.7, 1);
+    this.bossSprites.moveD.setOrigin(0.5, 0.8);
 
     this.bossCurrentAnim = "moveG"
   }

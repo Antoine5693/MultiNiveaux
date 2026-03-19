@@ -176,7 +176,7 @@ export default class Salle03 extends Phaser.Scene {
       this.physics.overlap(player, porte) == true) {
       open_porte1 = true;
       this.time.delayedCall(500, () => {
-        this.scene.start("BossZone");
+        this.scene.start("Couloir1", { x: 1312, y: 800 });
       });
       porte.anims.play("anim_ouvreporte1");
     }
