@@ -168,6 +168,8 @@ export default class selection extends Phaser.Scene {
     this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
 
     this.load.image("game_over", "src/assets/Game_Over.png")
+
+    this.load.image("victory", "src/assets/Victory.png");
   }
 
 
@@ -910,6 +912,6 @@ export default class selection extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(V)) this.scene.start("Couloir2");
     if (Phaser.Input.Keyboard.JustDown(O)) this.scene.start("Couloir3");
     if (Phaser.Input.Keyboard.JustDown(U)) this.scene.start("BossZone");
-    if (Phaser.Input.Keyboard.JustDown(E)) this.scene.start("Salle08");
+    if (Phaser.Input.Keyboard.JustDown(E)) this.scene.start("Salle14");
   }
 }
