@@ -71,9 +71,7 @@ export default class Couloir1 extends Phaser.Scene {
 
   create() {
     // Musique ambiance
-    if (!this.sound.get("musique_ambiance")) {
-      this.sound.add("musique_ambiance", { loop: true, volume: 1 }).play();
-    }
+     this.sound.add("musique_ambiance", { loop: true, volume: 2 }).play();
 
 
     this.sound.stopByKey("attaque_blob");
