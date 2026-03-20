@@ -61,6 +61,7 @@ export default class Couloir2 extends Phaser.Scene {
 
     this.sound.stopByKey("attaque_blob");
     this.sound.stopByKey("son_zombie_attaque");
+    this.sound.stopByKey("son_rodeur");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
