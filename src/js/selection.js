@@ -675,7 +675,7 @@ export default class selection extends Phaser.Scene {
     this.npc1.setOffset(0, 0);
 
     // dialogue
-    this.textefille1 = this.add.text(this.npc1.x+100, this.npc1.y - 100, "Ne t'inquète pas si parfois ton corps ne répond pas comme tu le souhaites et commence à diverger, c'est lieux sont obscurs.", {
+    this.textefille1 = this.add.text(this.npc1.x+100, this.npc1.y - 100, "Ne t'inquète pas si parfois ton corps ne répond pas comme tu le souhaites et commence à diverger, ces lieux sont obscurs.", {
       font: "16px Arial",
       fill: "#ffffff",
       backgroundColor: "#000000",
