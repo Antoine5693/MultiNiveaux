@@ -1,5 +1,5 @@
-import selection from "./js/selection.js"; 
-import niveau1 from "./js/niveau1.js"; 
+import selection from "./js/selection.js";
+import niveau1 from "./js/niveau1.js";
 import Salle01 from "./js/Salle01.js";
 import Salle02 from "./js/Salle02.js";
 import Salle03 from "./js/Salle03.js";
@@ -25,6 +25,11 @@ var config = {
   type: Phaser.AUTO,
   width: 800, // largeur en pixels
   height: 600, // hauteur en pixels
+
+  scale: {
+    mode: Phaser.Scale.FIT,        // ajuste la taille à l'écran
+    autoCenter: Phaser.Scale.CENTER_BOTH, // centre horizontalement et verticalement
+  },
   physics: {
     // définition des parametres physiques
     default: "arcade", // mode arcade : le plus simple : des rectangles pour gérer les collisions. Pas de pentes
@@ -36,11 +41,10 @@ var config = {
       debug: false // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [Menu,selection,niveau1,Salle01,Couloir1,Couloir2,Couloir3,BossZone,Salle02,Salle03,Salle04,Salle05,Salle06,Salle07,Salle08,Salle09,Salle10,Salle11,Salle12,Salle13,Salle14]  // liste des scenes du jeu : ici une seule scene : selection
+  scene: [Menu, selection, niveau1, Salle01, Couloir1, Couloir2, Couloir3, BossZone, Salle02, Salle03, Salle04, Salle05, Salle06, Salle07, Salle08, Salle09, Salle10, Salle11, Salle12, Salle13, Salle14]  // liste des scenes du jeu : ici une seule scene : selection
 };
 
 
 // création et lancement du jeu à partir de la configuration config
 var game = new Phaser.Game(config);
 game.scene.start("Menu"); // lancement de la scene selection
-  
